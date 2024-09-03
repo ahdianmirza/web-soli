@@ -33,6 +33,10 @@ class AlatController extends Controller
             return $item;
         });
 
+        $titleAlat = "Delete Alat";
+        $textAlat = "Yakin untuk menghapus ini?";
+        confirmDelete($titleAlat, $textAlat);
+
         return view('admin.alat', compact('alatData', 'user', 'labList'));
     }
 
@@ -73,7 +77,7 @@ class AlatController extends Controller
         $alat = Alat::find($id);
 
         if (!$alat) {
-            return redirect()->route('admin.alat')->with('error', 'Data alat tidak ditemukan!');
+            return redirect('/alat')->with('error', 'Data alat tidak ditemukan!');
         }
 
         $alat->id_lab = $validatedData['lab']; 
@@ -85,7 +89,7 @@ class AlatController extends Controller
 
         $alat->save();
 
-        return redirect()->route('admin.alat')->with('success', 'Data laboratorium berhasil diperbarui!');
+        return redirect('/alat')->with('success', 'Data laboratorium berhasil diperbarui!');
     }
 
     //hapus alat
@@ -100,6 +104,7 @@ class AlatController extends Controller
         $alat->status = 0;
         $alat->save();
 
-        return response()->json(['success' => 'Data alat berhasil dihapus!'], 200);
+        // return response()->json(['success' => 'Data alat berhasil dihapus!'], 200);
+        return redirect('/alat')->with("success", "Alat berhasil dihapus");
     }
 }

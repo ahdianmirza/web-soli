@@ -158,33 +158,34 @@
         </section>
     </main>
     <!-- Modal Tambah Peminjaman -->
-    <div class="modal fade" id="tambahPeminjaman" tabindex="-1" aria-labelledby="tambahPeminjamanLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+    <div class="modal modal-lg fade" id="tambahPeminjaman" tabindex="-1" aria-labelledby="tambahPeminjamanLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="tambahPeminjamanLabel">Tambah Peminjaman</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{ route('user.peminjaman.store') }}" method="POST">
+                    <form action="{{ route('user.peminjaman.store') }}" method="POST" class="container">
                         @csrf
                         <!-- Dropdown Lab -->
                         <div class="mb-3">
-                            <label for="id_lab" class="form-label">Lab</label>
-                            <select id="id_lab" name="id_lab" class="form-control">
+                            <label for="id_lab" class="col-form-label">Lab</label>
+                            <select id="id_lab" name="id_lab" class="form-select">
                                 <option value="">Pilih Lab</option>
                                 @foreach ($labs as $lab)
                                     <option value="{{ $lab->id_lab }}">{{ $lab->lab }}</option>
                                 @endforeach
                             </select>
                         </div>
-                        <div class="mb-3">
-                            <label for="id_alat" class="form-label">Nama Alat</label>
-                            <select class="form-select" name="id_alat" id="id_alat" required>
-                                <option value="">Pilih Alat</option>
-                                @foreach ($alat as $item)
-                                    <option value="{{ $item->id_alat }}" data-id_lab="{{ $item->id_lab }}">
-                                        {{ $item->nama_alat }}</option>
+                        <div class="mb-3 d-flex flex-column row">
+                            <label for="id_alat" class="col-form-label">Nama Alat</label>
+                            <select class="d-block col id_alat" multiple id="id_alat" name="id_alat"
+                                placeholder="Pilih alat" data-search="true" data-silent-initial-value-set="true"
+                                style="max-width: 100%;">
+                                @foreach ($alats as $alat)
+                                    <option value="{{ $alat->id_alat }}">{{ $alat->nama_alat }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -271,7 +272,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="editForm" action="" method="POST">
+                    <form id="editForm" action="/user/peminjaman/store" method="POST">
                         @csrf
                         @method('PUT') <!-- Ini penting untuk mengirimkan request PUT -->
                         <div class="mb-3">
@@ -292,7 +293,7 @@
                             <label for="edit_id_alat" class="form-label">Nama Alat</label>
                             <select class="form-select" name="id_alat" id="edit_id_alat" required>
                                 <option value="">Pilih Alat</option>
-                                @foreach ($alat as $item)
+                                @foreach ($alats as $item)
                                     <option value="{{ $item->id_alat }}" data-id_lab="{{ $item->id_lab }}">
                                         {{ $item->nama_alat }}</option>
                                 @endforeach
@@ -300,7 +301,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="edit_dosen" class="form-label">Dosen</label>
-                            <select id="edit_dosen" name="dosen" class="form-control" required>
+                            <select id="edit_dosen" name="dosen" class="form-select" required>
                                 <option value="">Pilih Dosen</option>
                                 <option value="Prof. Dr. Ir. Iriani Setyaningsih, MS">Prof. Dr. Ir. Iriani Setyaningsih, MS
                                 </option>
@@ -483,6 +484,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('tanggal_pinjam').setAttribute('min', today);
+        });
+    </script>
+
+    <script type="text/javascript" src="js/virtual-select.min.js"></script>
+    <script>
+        VirtualSelect.init({
+            ele: '#id_alat'
         });
     </script>
 @endsection

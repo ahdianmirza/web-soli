@@ -78,12 +78,13 @@ class PeminjamanController extends Controller
 
         // Mengambil data untuk dropdown
         $labs = DB::table('lab')->get(); // Ambil data lab
-        $alat = DB::table('alat')->get(); // Ambil data alat
+        $alats = DB::table('alat')->get(); // Ambil data alat
 
-        return view('user.peminjaman', compact('peminjaman', 'user', 'labs', 'alat'));
+        return view('user.peminjaman', compact('peminjaman', 'user', 'labs', 'alats'));
     }
     public function store(Request $request)
     {
+        dd($request->all());
         try {
             $validatedData = $request->validate([
                 'id_lab' => 'required|exists:lab,id_lab',
