@@ -101,11 +101,17 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/departemen/{id}', [DepartemenController::class, 'update'])->name('departemen.update');
     //lab
     Route::get('/lab', [LabController::class, 'index'])->middleware('userAkses:Admin');
+    
     //alat
     Route::get('/alat', [AlatController::class, 'index'])->middleware('userAkses:Admin');
+    Route::get('/alat/add', [AlatController::class, 'addAlatIndex'])->middleware('userAkses:Admin');
     Route::post('/alat', [AlatController::class, 'addAlatData'])->middleware('userAkses:Admin')->name('alat.add');
+
+    // Edit Alat
+    Route::get('/alat/{id}/edit', [AlatController::class, 'updateAlatIndex'])->middleware('userAkses:Admin')->name('alat.update.index');
     Route::put('/alat/{id}', [AlatController::class, 'updateAlatData'])->middleware('userAkses:Admin')->name('alat.update');
     Route::put('/alat/{id}/delete', [AlatController::class, 'deleteAlatData'])->middleware('userAkses:Admin')->name('alat.delete');
+    
     // peminjaman
     Route::get('/peminjaman', [PeminjamanController::class, 'index'])->middleware('userAkses:Admin');
     Route::put('/peminjaman/{id}', [PeminjamanController::class, 'approve'])->middleware('userAkses:Admin')->name('peminjaman.approve');

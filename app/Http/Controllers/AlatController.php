@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Alat;
+use App\Models\Lab;
 
 class AlatController extends Controller
 {
@@ -19,7 +20,7 @@ class AlatController extends Controller
             ->select('a.id_alat', 'a.id_lab', 'a.nama_alat', 'a.spesifikasi', 'a.jumlah', 'a.kondisi_alat', 'l.lab', 'a.id_status', 'a.status')
             ->join('departemen as d', 'l.id_departemen', '=', 'd.id_departemen')
             ->where('a.status', 1)
-            ->where('d.id_departemen', $idDepartemen) 
+            ->where('d.id_departemen', $idDepartemen)
             ->get();
         
         $labList = DB::table('lab')
@@ -38,6 +39,22 @@ class AlatController extends Controller
         confirmDelete($titleAlat, $textAlat);
 
         return view('admin.alat', compact('alatData', 'user', 'labList'));
+    }
+
+    public function addAlatIndex() {
+        $user = Auth::user();
+        $deptId = $user->id_departemen;
+
+        $labList = DB::table('lab')
+            ->select('id_lab', 'lab', 'id_departemen')
+            ->where('status', 1)
+            ->where('id_departemen', $deptId)
+            ->get();
+
+        return view('admin.alat.add_alat', [
+            "user" => $user,
+            "labList" => $labList
+        ]);
     }
 
     public function addAlatData(Request $request)
@@ -59,10 +76,27 @@ class AlatController extends Controller
             'id_status' => 1, 
         ]);
 
-        return redirect()->back()->with('success', 'Data Alat berhasil ditambahkan.');
+        return redirect('/alat')->with('success', 'Data alat berhasil ditambahkan.');
     }
 
     // update alat
+    public function updateAlatIndex($id_alat) {
+        $user = Auth::user();
+        $deptId = $user->id_departemen;
+
+        $selectedAlat = Alat::where("id_alat", $id_alat)->get();
+        $labList = Lab::select("id_lab", "lab", "id_departemen")
+                    ->where("id_departemen", $deptId)
+                    ->where("status", 1)
+                    ->get();
+
+        return view("admin.alat.edit_alat", [
+            "selectedAlat" => $selectedAlat,
+            "user" => $user,
+            "labList" => $labList
+        ]);
+    }
+
     public function updateAlatData(Request $request, $id)
     {
         $validatedData = $request->validate([
@@ -86,10 +120,9 @@ class AlatController extends Controller
         $alat->jumlah = $validatedData['jumlah'];
         $alat->kondisi_alat = $validatedData['kondisi_alat'];
         $alat->id_status = $validatedData['status'];
-
         $alat->save();
 
-        return redirect('/alat')->with('success', 'Data laboratorium berhasil diperbarui!');
+        return redirect('/alat')->with('success', 'Data alat berhasil diperbarui!');
     }
 
     //hapus alat
@@ -104,7 +137,6 @@ class AlatController extends Controller
         $alat->status = 0;
         $alat->save();
 
-        // return response()->json(['success' => 'Data alat berhasil dihapus!'], 200);
         return redirect('/alat')->with("success", "Alat berhasil dihapus");
     }
 }

@@ -26,9 +26,8 @@
                         <div class="card-body mt-3">
                             <!-- Table with stripped rows -->
                             <table class="table datatable">
-                                <a type="button" style="margin-left: 10px; margin-bottom:10px;"
-                                    class="btn  btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalAdd">Tambah
-                                    Alat</a>
+                                <a href="/alat/add" style="margin-left: 10px; margin-bottom:10px;"
+                                    class="btn btn-primary btn-sm">Tambah Alat</a>
                                 <thead>
                                     <tr>
                                         <th style="text-align: center;">No</th>
@@ -57,15 +56,9 @@
                                                     <span class="badge bg-danger">Non-Aktif</span>
                                                 @endif
                                             </td>
-                                            <td style="text-align: center;">
-                                                <button type="button" class="btn btn-outline-warning btn-sm"
-                                                    id="edit-alat-button" data-bs-toggle="modal" data-bs-target="#modalEdit"
-                                                    data-id="{{ $item->id_alat }}" data-id_lab="{{ $item->id_lab }}"
-                                                    data-lab="{{ $item->lab }}" data-nama_alat="{{ $item->nama_alat }}"
-                                                    data-spesifikasi="{{ $item->spesifikasi }}"
-                                                    data-jumlah="{{ $item->jumlah }}"
-                                                    data-kondisi_alat="{{ $item->kondisi_alat }}"
-                                                    data-id_status="{{ $item->id_status }}">Edit</button>
+                                            <td class="d-flex align-items-start gap-2">
+                                                <a href="/alat/{{ $item->id_alat }}/edit"
+                                                    class="btn btn-outline-warning btn-sm">Edit</a>
 
                                                 <form action="/alat/{{ $item->id_alat }}/delete" method="post"
                                                     id="deleteAlatForm">
@@ -82,249 +75,11 @@
                                 </tbody>
                             </table>
                         </div>
-
-                        <!-- Modal Add -->
-                        <div id="modalAdd" class="modal fade" tabindex="-1" role="dialog"
-                            aria-labelledby="modalAddLabel">
-                            <div class="modal-dialog modal-md" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h4 class="modal-title" id="modalAddLabel">Tambah Data Alat</h4>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                                            style="font-size: 24px;"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <form method="POST">
-                                            @csrf
-                                            <div class="form-group mb-3">
-                                                <label for="id_lab">Nama Laboratorium</label>
-                                                <select class="form-control" id="id_lab" name="id_lab" required>
-                                                    <option value="" selected disabled>Pilih Laboratorium</option>
-                                                    @foreach ($labList as $lab)
-                                                        <option value="{{ $lab->id_lab }}">{{ $lab->lab }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            <div class="form-group mb-3">
-                                                <label for="alatName">Nama Alat</label>
-                                                <input type="text" class="form-control" id="alatName" name="nama_alat"
-                                                    required>
-                                            </div>
-                                            <div class="form-group mb-3">
-                                                <label for="spec">Spesifikasi</label>
-                                                <input type="text" class="form-control" id="spec" name="spesifikasi"
-                                                    required>
-                                            </div>
-                                            <div class="form-group mb-3">
-                                                <label for="jumlah">Jumlah</label>
-                                                <input type="number" class="form-control" id="jumlah" name="jumlah"
-                                                    required>
-                                            </div>
-                                            <div class="form-group mb-3">
-                                                <label for="kondisi">Kondisi</label>
-                                                <input type="text" class="form-control" id="kondisi"
-                                                    name="kondisi_alat" required>
-                                            </div>
-                                        </form>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-default"
-                                            data-bs-dismiss="modal">Batal</button>
-                                        <button type="button" class="btn btn-primary"
-                                            onclick="document.getElementById('addAlatForm').submit();">Simpan</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Modal Edit -->
-                        <div id="modalEdit" class="modal fade" tabindex="-1" role="dialog"
-                            aria-labelledby="modalEditLabel">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h4 class="modal-title" id="modalEditLabel">Edit Data Alat</h4>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close" style="font-size: 24px;"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <form action="/alat" method="POST" id="formEditAlat">
-                                            @csrf
-                                            @method('PUT')
-                                            <div class="form-group mb-3">
-                                                <label for="labName">Nama Laboratorium</label>
-                                                <select class="form-control" id="labName" name="lab">
-                                                    @foreach ($labList as $lab)
-                                                        <option value="{{ $lab->id_lab }}"
-                                                            @if ($lab->id_lab == $item->id_lab) selected @endif>
-                                                            {{ $lab->lab }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            <div class="form-group mb-3">
-                                                <label for="alatName">Nama Alat</label>
-                                                <input type="text" class="form-control" id="alatName"
-                                                    name="nama_alat" value="{{ $item->nama_alat }}">
-                                            </div>
-                                            <div class="form-group mb-3">
-                                                <label for="spec">Spesifikasi</label>
-                                                <input type="text" class="form-control" id="spec"
-                                                    name="spesifikasi" value="{{ $item->spesifikasi }}">
-                                            </div>
-                                            <div class="form-group mb-3">
-                                                <label for="jumlah">Jumlah</label>
-                                                <input type="number" class="form-control" id="jumlah" name="jumlah"
-                                                    value="{{ $item->jumlah }}">
-                                            </div>
-                                            <div class="form-group mb-3">
-                                                <label for="kondisi">Kondisi</label>
-                                                <input type="text" class="form-control" id="kondisi"
-                                                    name="kondisi_alat" value="{{ $item->kondisi_alat }}">
-                                            </div>
-                                            <div class="form-group mb-3">
-                                                <label for="id_status">Status</label>
-                                                <select class="form-control" id="id_status" name="status">
-                                                    <option value="1"
-                                                        @if ($item->id_status === 1) selected @endif>Aktif</option>
-                                                    <option value="2"
-                                                        @if ($item->id_status === 2) selected @endif>Non-Aktif</option>
-                                                </select>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-default" aria-label="Close"
-                                                    data-bs-dismiss="modal">Batal</button>
-                                                <button class="btn btn-primary" type="submit">Simpan</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Modal Batalkan -->
-                        {{-- <div id="modalBatalkan" class="modal fade" tabindex="-1" role="dialog"
-                            aria-labelledby="modalBatalkanLabel">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h4 class="modal-title" id="modalBatalkanLabel">Konfirmasi Penghapusan</h4>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close" style="font-size: 24px;"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p>Apakah Anda yakin ingin menghapus data ini?</p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <form id="deleteAlatForm" method="POST" action="">
-                                            <button type="button" class="btn btn-default"
-                                                data-bs-dismiss="modal">Tidak</button>
-                                            <button type="submit" class="btn btn-danger">Ya, Hapus</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> --}}
                     </div>
                 </div>
             </div>
         </section>
 
-        <script>
-            // Handle Delete Alat
-            $(document).ready(function() {
-                $(".confirm-delete").on("click", (e) => {
-                    e.preventDefault();
-                    Swal.fire({
-                        title: "Are you sure?",
-                        text: "You won't be able to revert this!",
-                        icon: "warning",
-                        showCancelButton: true,
-                        confirmButtonColor: "#3085d6",
-                        cancelButtonColor: "#d33",
-                        confirmButtonText: "Yes, delete it!"
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            $("#deleteAlatForm").submit();
-                        }
-                    });
-                })
-            });
-        </script>
-
-        <script>
-            $(document).ready(() => {
-                $("#edit-alat-button").on("click", (e) => {
-                    e.preventDefault();
-                    let id = document.getElementById("edit-alat-button").getAttribute("data-id");
-                    console.info("id alat: ", id);
-                })
-
-                // $('#formEditAlat').on('submit', function(e) {
-                //     e.preventDefault();
-
-                //     var form = $(this);
-                //     var actionUrl = form.attr('action');
-
-                //     $.ajax({
-                //         type: 'POST',
-                //         url: actionUrl,
-                //         data: form.serialize(),
-                //         success: function(response) {
-                //             $('#modalEdit').modal('hide');
-
-                //             Swal.fire({
-                //                 icon: 'success',
-                //                 title: 'Berhasil!',
-                //                 text: 'Data alat berhasil diperbarui!',
-                //                 showConfirmButton: false,
-                //                 timer: 1500
-                //             }).then(function() {
-                //                 location.reload();
-                //             });
-                //         },
-                //         error: function(response) {
-                //             console.log('Error:', response);
-
-                //             Swal.fire({
-                //                 icon: 'error',
-                //                 title: 'Gagal!',
-                //                 text: 'Terjadi kesalahan saat memperbarui data.',
-                //             });
-                //         }
-                //     });
-                // });
-            });
-        </script>
-        <script>
-            $(document).ready(function() {
-                $('.btn-edit').on('click', function() {
-                    var id = $(this).data('id');
-                    var id_lab = $(this).data('id_lab');
-                    var lab = $(this).data('lab');
-                    var nama_alat = $(this).data('nama_alat');
-                    var spesifikasi = $(this).data('spesifikasi');
-                    var jumlah = $(this).data('jumlah');
-                    var kondisi_alat = $(this).data('kondisi_alat');
-                    var status = $(this).data('id_status');
-
-                    $('#formEditAlat').attr('action', '/masterAlat/' + id);
-
-                    $('#modalEdit #labName').val(id_lab);
-                    $('#modalEdit #alatName').val(nama_alat);
-                    $('#modalEdit #spec').val(spesifikasi);
-                    $('#modalEdit #jumlah').val(jumlah);
-                    $('#modalEdit #kondisi').val(kondisi_alat);
-
-                    if (status == 1) {
-                        $('#modalEdit #id_status').val(1);
-                    } else {
-                        $('#modalEdit #id_status').val(2);
-                    }
-                });
-            });
-        </script>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+        @include('admin.alat.alat_js')
     </main>
-@endsection
+    @endsections
