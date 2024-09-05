@@ -27,7 +27,7 @@
                         </a>
                     </li> -->
                     <li>
-                        <a href="lab">
+                        <a href="/lab">
                             <i class="bi bi-circle"></i><span>Lab</span>
                         </a>
                     </li>

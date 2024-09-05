@@ -99,8 +99,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/departemen/edit-data/{id}', [DepartemenController::class, 'getEditData'])->middleware('userAkses:Admin');
     Route::post('/departemen/delete/{id}', [DepartemenController::class, 'destroy'])->middleware('userAkses:Admin')->name('departemen.delete');
     Route::put('/departemen/{id}', [DepartemenController::class, 'update'])->name('departemen.update');
+    
     //lab
     Route::get('/lab', [LabController::class, 'index'])->middleware('userAkses:Admin');
+    Route::get('/lab/add', [LabController::class, 'addLabIndex'])->middleware('userAkses:Admin');
+    Route::post('/lab/add', [LabController::class, 'addLab'])->middleware('userAkses:Admin');
+    Route::get('/lab/{id_lab}/edit', [LabController::class, 'editLabIndex'])->middleware('userAkses:Admin');
+    Route::put('/lab/{id_lab}/edit', [LabController::class, 'editLab'])->middleware('userAkses:Admin');
+    Route::put('/lab/{id_lab}/delete', [LabController::class, 'deleteLab'])->middleware('userAkses:Admin');
     
     //alat
     Route::get('/alat', [AlatController::class, 'index'])->middleware('userAkses:Admin');

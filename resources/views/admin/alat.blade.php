@@ -61,11 +61,11 @@
                                                     class="btn btn-outline-warning btn-sm">Edit</a>
 
                                                 <form action="/alat/{{ $item->id_alat }}/delete" method="post"
-                                                    id="deleteAlatForm">
+                                                    id="deleteAlatForm-{{ $item->id_alat }}">
                                                     @method('put')
                                                     @csrf
-                                                    <button class="btn btn-outline-danger btn-sm confirm-delete"
-                                                        type="submit">
+                                                    <button onclick="handleDeleteAlat(event, {{ $item->id_alat }})"
+                                                        class="btn btn-outline-danger btn-sm" type="submit">
                                                         Hapus
                                                     </button>
                                                 </form>
