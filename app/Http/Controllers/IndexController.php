@@ -63,6 +63,7 @@ class IndexController extends Controller
             ->join('fakultas as f', 'f.id_fakultas', '=', 'd.id_fakultas')
             ->where('f.id_fakultas', 1)
             ->where('d.id_departemen', 1)
+            ->where('a.status', 1)
             ->get();
 
         return view('fakultas.faperta.agro', compact('alat'));

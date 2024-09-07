@@ -23,7 +23,7 @@
                                 <div class="form-group mb-3">
                                     <label for="labName">Nama Laboratorium</label>
                                     <select class="form-control" id="labName" name="id_lab">
-                                        <option selected disabled>Pilih lab</option>
+                                        <option selected disabled>Pilih laboratorium</option>
                                         @foreach ($labList as $lab)
                                             <option value="{{ $lab->id_lab }}">
                                                 {{ $lab->lab }}

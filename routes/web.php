@@ -129,6 +129,14 @@ Route::middleware(['auth'])->group(function () {
     //User
     Route::get('/user', [UserController::class, 'index'])->middleware('userAkses:User');
     //peminjaman user
+    Route::get('/header-peminjamanUser', [PeminjamanController::class, 'indexHeader'])->middleware('userAkses:User')->name('user.header-peminjaman.index');
+    Route::get('/header-peminjamanUser/add', [PeminjamanController::class, 'addHeader'])->middleware('userAkses:User')->name('user.add-header-peminjaman.index');
+    Route::post('/header-peminjamanUser/add', [PeminjamanController::class, 'storeHeader'])->middleware('userAkses:User')->name('user.header-peminjaman.store');
+    Route::get('/header-peminjamanUser/{id}/edit', [PeminjamanController::class, 'editHeader'])->middleware('userAkses:User')->name('user.edit-header-peminjaman.index');
+    Route::put('/header-peminjamanUser/{id}/edit', [PeminjamanController::class, 'updateHeader'])->middleware('userAkses:User')->name('user.header-peminjaman.update');
+    Route::put('/header-peminjamanUser/{id}/delete', [PeminjamanController::class, 'deleteHeader'])->middleware('userAkses:User')->name('user.header-peminjaman.delete');
+    
+    
     Route::get('/peminjamanUser', [PeminjamanController::class, 'indexUser'])->middleware('userAkses:User')->name('user.peminjaman.index');
     Route::post('/user/peminjaman/store', [PeminjamanController::class, 'store'])->name('user.peminjaman.store');
     Route::get('/peminjaman/edit/{id}', [PeminjamanController::class, 'edit']);
