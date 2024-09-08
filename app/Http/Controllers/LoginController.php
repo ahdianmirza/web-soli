@@ -25,7 +25,7 @@ class LoginController extends Controller
             if (Auth::user()->id_role == "Admin") {
                 return redirect('/admin');
             } elseif (Auth::user()->id_role == "User") {
-                return redirect('/peminjamanUser');
+                return redirect('/header-peminjamanUser');
             } elseif (Auth::user()->id_role == "Superadmin") {
                 return redirect('/superadmin');
             }

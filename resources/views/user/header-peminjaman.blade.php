@@ -48,6 +48,8 @@
                                             <td style="text-align: center;">
                                                 {{ date('H:i', strtotime($header->end_time)) }}</td>
                                             <td class="d-flex gap-2 flex-wrap justify-content-center align-items-center">
+                                                <a href="/detail-peminjamanUser/{{ $header->id }}"
+                                                    class="btn btn-primary btn-sm"><i class="bi bi-eye-fill"></i></i></a>
                                                 <a href="/header-peminjamanUser/{{ $header->id }}/edit"
                                                     class="btn btn-warning btn-sm"><i class="bi bi-pencil-square"></i></a>
                                                 <form action="/header-peminjamanUser/{{ $header->id }}/delete"
@@ -56,7 +58,7 @@
                                                     @method('put')
                                                     <button onclick="handleDeleteHeader(event, {{ $header->id }})"
                                                         type="submit" class="btn btn-danger btn-sm"><i
-                                                            class="bi bi-trash"></i></button>
+                                                            class="bi bi-trash-fill"></i></i></button>
                                                 </form>
                                             </td>
                                         </tr>

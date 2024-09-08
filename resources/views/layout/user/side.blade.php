@@ -12,7 +12,7 @@
             <li class="nav-heading">Menu</li>
 
             <li class="nav-item">
-                <a class="nav-link collapsed" href="/peminjamanUser">
+                <a class="nav-link collapsed" href="/header-peminjamanUser">
                     <i class="bi bi-card-list"></i>
                     <span>Peminjaman</span>
                 </a>

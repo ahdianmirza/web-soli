@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Alat;
+use App\Models\DetailTransaksi;
 use App\Models\HeaderTransaksi;
 use App\Models\Lab;
 use App\Models\Transaksi;
@@ -165,6 +166,68 @@ class PeminjamanController extends Controller
         $selectedHeader->save();
         
         return redirect('/header-peminjamanUser')->with('success', 'Data header peminjaman berhasil dihapus.');
+    }
+
+    public function indexDetail($id) {
+        $user = Auth::user();
+        $selectedHeader = DB::table('header_transaksis as header')
+        ->select("header.*", "users.name as user_name")
+        ->join("users", "header.user_id", "=", "users.id")
+        ->where("header.id", $id)
+        ->get();
+
+        $detailList = DB::table('detail_transaksis as detail')
+        ->select("detail.id", "detail.id_header", "detail.id_alat", "detail.qty_borrow as detail_qty_borrow", "detail.is_deleted as detail_is_deleted", "detail.created_at as detail_created_at", "detail.updated_at as detail_updated_at", "alat.nama_alat as nama_alat", "alat.kondisi_alat")
+        ->join('alat', 'detail.id_alat', '=', 'alat.id_alat')
+        ->where("detail.is_deleted", null)
+        ->where("id_header", $id)
+        ->get();
+
+        return view('user.detail-peminjaman.detail-peminjaman', [
+            "user" => $user,
+            "selectedHeader" => $selectedHeader,
+            "detailList" => $detailList
+        ]);
+    }
+
+    public function addDetail($id) {
+        $user = Auth::user();
+        $selectedHeader = HeaderTransaksi::find($id);
+        $alatList = Alat::where("id_lab", $selectedHeader->id_lab)
+                    ->whereRaw("jumlah - COALESCE(qty_borrow, 0) != 0")
+                    ->where("status", 1)
+                    ->get();
+
+        return view('user.detail-peminjaman.add-detail-peminjaman', [
+            "user" => $user,
+            "alatList" => $alatList,
+            "id_selectedHeader" => $selectedHeader->id
+        ]);
+    }
+
+    public function storeDetail(Request $request, $id) {
+        $validatedData = $request->validate([
+            "id_alat" => 'required|integer',
+            "qty_borrow" => 'required|integer',
+        ]);
+
+        $selectedAlat = Alat::find($validatedData['id_alat']);
+        $qtyBorrowAlat = $selectedAlat->qty_borrow ?? 0;
+
+        if($selectedAlat->jumlah < ($qtyBorrowAlat + $validatedData['qty_borrow'])) {
+            return redirect("/detail-peminjamanUser/$id/add")->with('error', 'Jumlah alat yang dipinjam melebihi kesediaan alat.');
+        }
+
+        $selectedAlat->qty_borrow += $validatedData['qty_borrow'];
+        $selectedAlat->save();
+
+        DetailTransaksi::create([
+            "id_header" => $id,
+            "id_alat" => $validatedData['id_alat'],
+            "qty_borrow" => $validatedData['qty_borrow'],
+        ]);
+
+        return redirect("/detail-peminjamanUser/$id")->with('success', 'Data detail peminjaman berhasil ditambahkan.');
     }
 
     public function indexUser()
