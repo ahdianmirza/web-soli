@@ -48,12 +48,14 @@
                                             <td style="text-align: center;">{{ $detail->detail_qty_borrow }}</td>
                                             <td style="text-align: center;">{{ $detail->kondisi_alat }}</td>
                                             <td class="d-flex gap-2 flex-wrap justify-content-center align-items-center">
-                                                <a href="" class="btn btn-warning btn-sm"><i
-                                                        class="bi bi-pencil-square"></i></a>
-                                                <form action="" method="post" id="">
+                                                <a href="/detail-peminjamanUser/{{ $detail->id }}/edit"
+                                                    class="btn btn-warning btn-sm"><i class="bi bi-pencil-square"></i></a>
+                                                <form action="/detail-peminjamanUser/{{ $detail->id }}/delete"
+                                                    method="post" id="deleteDetailForm-{{ $detail->id }}">
                                                     @csrf
                                                     @method('put')
-                                                    <button type="submit" class="btn btn-danger btn-sm"><i
+                                                    <button onclick="handleDeleteDetail(event, {{ $detail->id }})"
+                                                        type="submit" class="btn btn-danger btn-sm"><i
                                                             class="bi bi-trash-fill"></i></i></button>
                                                 </form>
                                             </td>
@@ -66,5 +68,6 @@
                 </div>
             </div>
         </section>
+        @include('user.detail-peminjaman.detail-peminjaman_js')
     </main>
 @endsection

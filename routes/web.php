@@ -142,6 +142,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/detail-peminjamanUser/{id}', [PeminjamanController::class, 'indexDetail'])->middleware('userAkses:User')->name('user.detail-peminjaman.index');
     Route::get('/detail-peminjamanUser/{id}/add', [PeminjamanController::class, 'addDetail'])->middleware('userAkses:User')->name('user.add-detail-peminjaman.index');
     Route::post('/detail-peminjamanUser/{id}/add', [PeminjamanController::class, 'storeDetail'])->middleware('userAkses:User')->name('user.detail-peminjaman.store');
+    Route::get('/detail-peminjamanUser/{id}/edit', [PeminjamanController::class, 'editDetail'])->middleware('userAkses:User')->name('user.edit-detail-peminjaman.index');
+    Route::put('/detail-peminjamanUser/{id}/update', [PeminjamanController::class, 'updateDetail'])->middleware('userAkses:User')->name('user.detail-peminjaman.update');
+    Route::put('/detail-peminjamanUser/{id}/delete', [PeminjamanController::class, 'deleteDetail'])->middleware('userAkses:User')->name('user.detail-peminjaman.delete');
 
     Route::get('/peminjamanUser', [PeminjamanController::class, 'indexUser'])->middleware('userAkses:User')->name('user.peminjaman.index');
     Route::post('/user/peminjaman/store', [PeminjamanController::class, 'store'])->name('user.peminjaman.store');

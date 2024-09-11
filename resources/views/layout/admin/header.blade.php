@@ -25,7 +25,7 @@
                             <span>{{ $user->email }}</span>
                         </li>
                         <li>
-                            <a class="dropdown-item d-flex align-items-center" href="logout">
+                            <a class="dropdown-item d-flex align-items-center" href="/logout">
                                 <i class="bi bi-box-arrow-right"></i>
                                 <span>Logout</span>
                             </a>
