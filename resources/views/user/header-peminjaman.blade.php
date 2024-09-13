@@ -28,8 +28,8 @@
                                         <th style="text-align: center;">Nama Laboratorium</th>
                                         <th style="text-align: center;">Nama Dosen</th>
                                         <th style="text-align: center;">Tanggal Peminjaman</th>
-                                        <th style="text-align: center;">Waktu Mulai</th>
-                                        <th style="text-align: center;">Waktu Selesai</th>
+                                        <th style="text-align: center;">Waktu</th>
+                                        <th style="text-align: center;">Status</th>
                                         <th style="text-align: center;">Action</th>
                                     </tr>
                                 </thead>
@@ -44,22 +44,55 @@
                                             <td style="text-align: center;">
                                                 {{ date('d M Y', strtotime($header->tanggal_pinjam)) }}</td>
                                             <td style="text-align: center;">
-                                                {{ date('H:i', strtotime($header->start_time)) }}</td>
-                                            <td style="text-align: center;">
+                                                {{ date('H:i', strtotime($header->start_time)) }} -
                                                 {{ date('H:i', strtotime($header->end_time)) }}</td>
-                                            <td class="d-flex gap-2 flex-wrap justify-content-center align-items-center">
-                                                <a href="/detail-peminjamanUser/{{ $header->id }}"
-                                                    class="btn btn-primary btn-sm"><i class="bi bi-eye-fill"></i></i></a>
-                                                <a href="/header-peminjamanUser/{{ $header->id }}/edit"
-                                                    class="btn btn-warning btn-sm"><i class="bi bi-pencil-square"></i></a>
-                                                <form action="/header-peminjamanUser/{{ $header->id }}/delete"
-                                                    method="post" id="deleteHeaderForm-{{ $header->id }}">
-                                                    @csrf
-                                                    @method('put')
-                                                    <button onclick="handleDeleteHeader(event, {{ $header->id }})"
-                                                        type="submit" class="btn btn-danger btn-sm"><i
-                                                            class="bi bi-trash-fill"></i></i></button>
-                                                </form>
+                                            <td style="text-align: center;">
+                                                @if ($header->status === null)
+                                                    <button class="btn btn-danger btn-sm">Belum Dikirim</button>
+                                                @endif
+
+                                                @if ($header->status == 1)
+                                                    <button class="btn btn-default btn-sm text-white"
+                                                        style="background-color: #fd7e14">Menunggu</button>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <div class="d-flex gap-2 flex-wrap justify-content-center">
+                                                    <a href="/detail-peminjamanUser/{{ $header->id }}"
+                                                        class="btn btn-primary btn-sm"><i
+                                                            class="bi bi-eye-fill"></i></i></a>
+
+                                                    @if ($header->status === null)
+                                                        <a href="/header-peminjamanUser/{{ $header->id }}/edit"
+                                                            class="btn btn-warning btn-sm"><i
+                                                                class="bi bi-pencil-square"></i></a>
+                                                    @endif
+
+                                                    @if ($header->status === null)
+                                                        <form action="/header-peminjamanUser/{{ $header->id }}/delete"
+                                                            method="post" id="deleteHeaderForm-{{ $header->id }}">
+                                                            @csrf
+                                                            @method('put')
+                                                            <button
+                                                                onclick="handleDeleteHeader(event, {{ $header->id }})"
+                                                                type="submit" class="btn btn-danger btn-sm"><i
+                                                                    class="bi bi-trash-fill"></i></i></button>
+                                                        </form>
+                                                    @endif
+
+                                                    @if ($header->status === null)
+                                                        <form action="/peminjaman/{{ $header->id }}" method="post"
+                                                            id="approvalHeaderForm-{{ $header->id }}">
+                                                            @csrf
+                                                            @method('put')
+                                                            <button
+                                                                onclick="handleApprovalHeader(event, {{ $header->id }})"
+                                                                type="submit" class="btn btn-default btn-sm"
+                                                                style="background-color: #6610f2"><i
+                                                                    class="bi bi-send-fill text-white"></i></button>
+                                                        </form>
+                                                    @endif
+                                                </div>
                                             </td>
                                         </tr>
                                     @endforeach

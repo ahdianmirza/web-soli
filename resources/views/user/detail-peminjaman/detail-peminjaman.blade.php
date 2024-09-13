@@ -23,6 +23,8 @@
                                 <p class="my-0">Nama Dosen : {{ $selectedHeader[0]->dosen }}</p>
                                 <p class="my-0">Tanggal Peminjaman :
                                     {{ date('d M Y', strtotime($selectedHeader[0]->tanggal_pinjam)) }}</p>
+                                <p class="my-0">Waktu : {{ date('H:i', strtotime($selectedHeader[0]->start_time)) }} -
+                                    {{ date('H:i', strtotime($selectedHeader[0]->end_time)) }}</p>
                             </span>
                             <hr>
 
@@ -37,7 +39,9 @@
                                         <th style="text-align: center;">Nama Alat</th>
                                         <th style="text-align: center;">Jumlah Peminjaman</th>
                                         <th style="text-align: center;">Kondisi</th>
-                                        <th style="text-align: center;">Action</th>
+                                        @if ($selectedHeader[0]->status === null)
+                                            <th style="text-align: center;">Action</th>
+                                        @endif
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -47,18 +51,22 @@
                                             <td style="text-align: center;">{{ $detail->nama_alat }}</td>
                                             <td style="text-align: center;">{{ $detail->detail_qty_borrow }}</td>
                                             <td style="text-align: center;">{{ $detail->kondisi_alat }}</td>
-                                            <td class="d-flex gap-2 flex-wrap justify-content-center align-items-center">
-                                                <a href="/detail-peminjamanUser/{{ $detail->id }}/edit"
-                                                    class="btn btn-warning btn-sm"><i class="bi bi-pencil-square"></i></a>
-                                                <form action="/detail-peminjamanUser/{{ $detail->id }}/delete"
-                                                    method="post" id="deleteDetailForm-{{ $detail->id }}">
-                                                    @csrf
-                                                    @method('put')
-                                                    <button onclick="handleDeleteDetail(event, {{ $detail->id }})"
-                                                        type="submit" class="btn btn-danger btn-sm"><i
-                                                            class="bi bi-trash-fill"></i></i></button>
-                                                </form>
-                                            </td>
+                                            @if ($selectedHeader[0]->status === null)
+                                                <td
+                                                    class="d-flex gap-2 flex-wrap justify-content-center align-items-center">
+                                                    <a href="/detail-peminjamanUser/{{ $detail->id }}/edit"
+                                                        class="btn btn-warning btn-sm"><i
+                                                            class="bi bi-pencil-square"></i></a>
+                                                    <form action="/detail-peminjamanUser/{{ $detail->id }}/delete"
+                                                        method="post" id="deleteDetailForm-{{ $detail->id }}">
+                                                        @csrf
+                                                        @method('put')
+                                                        <button onclick="handleDeleteDetail(event, {{ $detail->id }})"
+                                                            type="submit" class="btn btn-danger btn-sm"><i
+                                                                class="bi bi-trash-fill"></i></i></button>
+                                                    </form>
+                                                </td>
+                                            @endif
                                         </tr>
                                     @endforeach
                                 </tbody>

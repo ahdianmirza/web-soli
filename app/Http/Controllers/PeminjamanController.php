@@ -28,17 +28,21 @@ class PeminjamanController extends Controller
         return view('admin.peminjaman', compact('peminjaman', 'user'));
     }
 
-    public function approve(Request $request, $id)
+    public function peminjamanApproval($id)
     {
-        $request->validate([
-            'approve' => 'required|integer',
-        ]);
+        $selectedHeader = HeaderTransaksi::find($id);
+        $selectedDetailCount = DetailTransaksi::where("id_header", $id)
+        ->where("is_deleted", null)
+        ->get()
+        ->count();
+        
+        if ($selectedDetailCount === 0) {
+            return back()->with('error', 'Belum terdapat detail peminjaman');
+        }
 
-        $peminjaman = Transaksi::findOrFail($id);
-        $peminjaman->approve = $request->input('approve');
-        $peminjaman->save();
-
-        return redirect()->back()->with('success', 'Status peminjaman berhasil diperbarui!');
+        $selectedHeader->status = 1;
+        $selectedHeader->save();
+        return back()->with('success', 'Pengiriman peminjaman berhasil');
     }
 
     public function batal($id)
@@ -207,16 +211,18 @@ class PeminjamanController extends Controller
             'id_alat' => 'required|integer',
             'qty_borrow' => 'required|integer',
         ]);
-
         $selectedAlat = Alat::find($validatedData['id_alat']);
-        $qtyBorrowAlat = $selectedAlat->qty_borrow ?? 0;
+        $duplicateAlat = DetailTransaksi::where("id_alat", $validatedData['id_alat'])
+        ->where("id_header", $id)
+        ->first();
 
-        if ($selectedAlat->jumlah < $qtyBorrowAlat + $validatedData['qty_borrow']) {
-            return redirect("/detail-peminjamanUser/$id/add")->with('error', 'Jumlah alat yang dipinjam melebihi kesediaan alat.');
+        if ($duplicateAlat) {
+            return back()->with('error', 'Alat yang Anda pilih sudah tersimpan');
         }
 
-        $selectedAlat->qty_borrow += $validatedData['qty_borrow'];
-        $selectedAlat->save();
+        if ($selectedAlat->jumlah < $validatedData['qty_borrow']) {
+            return back()->with('error', 'Jumlah alat yang dipinjam melebihi kesediaan alat.');
+        }
 
         DetailTransaksi::create([
             'id_header' => $id,
@@ -263,25 +269,9 @@ class PeminjamanController extends Controller
 
         $selectedAlat = Alat::find($validatedData['id_alat']);
         $selectedDetail = DetailTransaksi::find($id);
-        $qtyBorrowAlat = $selectedAlat->qty_borrow ?? 0;
 
-        if ($selectedDetail->qty_borrow > $validatedData['qty_borrow']) {
-            $qty = $selectedDetail->qty_borrow - $validatedData['qty_borrow'];
-            $selectedAlat->qty_borrow -= $qty;
-
-            if ($selectedAlat->qty_borrow > $selectedAlat->jumlah || $selectedAlat->qty_borrow < 0) {
-                return redirect("/detail-peminjamanUser/$id/edit")->with('error', 'Jumlah alat yang dipinjam melebihi kesediaan alat.');
-            }
-            $selectedAlat->save();
-        } else if ($selectedDetail->qty_borrow < $validatedData['qty_borrow']) {
-            $qty = $validatedData['qty_borrow'] - $selectedDetail->qty_borrow;
-
-            if ($selectedAlat->jumlah < $qtyBorrowAlat + $qty) {
-                return redirect("/detail-peminjamanUser/$id/edit")->with('error', 'Jumlah alat yang dipinjam melebihi kesediaan alat.');
-            }
-            
-            $selectedAlat->qty_borrow += $qty;
-            $selectedAlat->save();
+        if ($selectedAlat->jumlah < $validatedData['qty_borrow']) {
+            return redirect("/detail-peminjamanUser/$id/edit")->with('error', 'Jumlah alat yang dipinjam melebihi kesediaan alat.');
         }
 
         $selectedDetail->id_alat = $validatedData['id_alat'];
@@ -294,17 +284,8 @@ class PeminjamanController extends Controller
     public function deleteDetail($id)
     {
         $selectedDetail = DetailTransaksi::find($id);
-        $selectedAlat = Alat::find($selectedDetail->id_alat);
-
         $selectedDetail->is_deleted = 1;
-        $selectedAlat->qty_borrow -= $selectedDetail->qty_borrow;
-        if ($selectedAlat->qty_borrow == 0) {
-            $selectedAlat->qty_borrow = null;
-        }
-
         $selectedDetail->save();
-        $selectedAlat->save();
-
         return back()->with('success', 'Data detail peminjaman berhasil dihapus.');
     }
 

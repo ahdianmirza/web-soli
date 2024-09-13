@@ -10,8 +10,8 @@
 </script>
 
 <script>
-    // Handle Delete Alat
-    const handleDeleteHeader = (e, id_alat) => {
+    // Handle Delete Header
+    const handleDeleteHeader = (e, id) => {
         e.preventDefault();
         Swal.fire({
             title: "Are you sure?",
@@ -23,7 +23,25 @@
             confirmButtonText: "Yes, delete it!"
         }).then((result) => {
             if (result.isConfirmed) {
-                $(`#deleteHeaderForm-${id_alat}`).submit();
+                $(`#deleteHeaderForm-${id}`).submit();
+            }
+        });
+    }
+
+    // Handle Approval Header
+    const handleApprovalHeader = (e, id) => {
+        e.preventDefault();
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, send it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $(`#approvalHeaderForm-${id}`).submit();
             }
         });
     }

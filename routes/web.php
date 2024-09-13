@@ -117,10 +117,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/alat/{id}/edit', [AlatController::class, 'updateAlatIndex'])->middleware('userAkses:Admin')->name('alat.update.index');
     Route::put('/alat/{id}', [AlatController::class, 'updateAlatData'])->middleware('userAkses:Admin')->name('alat.update');
     Route::put('/alat/{id}/delete', [AlatController::class, 'deleteAlatData'])->middleware('userAkses:Admin')->name('alat.delete');
+
+    // User Send Approval
+    Route::put('/peminjaman-approval/{id}/', [AlatController::class, 'approvalPeminjaman'])->middleware('userAkses:Admin')->name('peminjaman.approval');
     
     // peminjaman
     Route::get('/peminjaman', [PeminjamanController::class, 'index'])->middleware('userAkses:Admin');
-    Route::put('/peminjaman/{id}', [PeminjamanController::class, 'approve'])->middleware('userAkses:Admin')->name('peminjaman.approve');
     Route::get('/peminjaman/{id}/batal', [PeminjamanController::class, 'batal'])->name('peminjaman.batal');
     Route::get('/peminjaman/pdfall', [PeminjamanController::class, 'downloadPDFAll'])->name('admin.downloadPDFAll');
     //dosen
@@ -145,6 +147,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/detail-peminjamanUser/{id}/edit', [PeminjamanController::class, 'editDetail'])->middleware('userAkses:User')->name('user.edit-detail-peminjaman.index');
     Route::put('/detail-peminjamanUser/{id}/update', [PeminjamanController::class, 'updateDetail'])->middleware('userAkses:User')->name('user.detail-peminjaman.update');
     Route::put('/detail-peminjamanUser/{id}/delete', [PeminjamanController::class, 'deleteDetail'])->middleware('userAkses:User')->name('user.detail-peminjaman.delete');
+
+    // Peminjaman Approval
+    Route::put('/peminjaman/{id}', [PeminjamanController::class, 'peminjamanApproval'])->middleware('userAkses:User')->name('peminjaman.approval');
 
     Route::get('/peminjamanUser', [PeminjamanController::class, 'indexUser'])->middleware('userAkses:User')->name('user.peminjaman.index');
     Route::post('/user/peminjaman/store', [PeminjamanController::class, 'store'])->name('user.peminjaman.store');
