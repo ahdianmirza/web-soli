@@ -19,6 +19,7 @@
                             <h4>Informasi Detail Peminjaman</h4>
                             <span class="d-flex flex-column gap-1 mb-3">
                                 <p class="my-0">Nama Header : {{ $selectedHeader[0]->header_name }}</p>
+                                <p class="my-0">Nama Laboratorium : {{ $selectedHeader[0]->lab_name }}</p>
                                 <p class="my-0">Nama Peminjam : {{ $selectedHeader[0]->user_name }}</p>
                                 <p class="my-0">Nama Dosen : {{ $selectedHeader[0]->dosen }}</p>
                                 <p class="my-0">Tanggal Peminjaman :
@@ -28,9 +29,11 @@
                             </span>
                             <hr>
 
-                            <a href="/detail-peminjamanUser/{{ $selectedHeader[0]->id }}/add"
-                                class="btn btn-primary btn-sm mb-3">Tambah Detail
-                                Peminjaman</a>
+                            @if ($selectedHeader[0]->status === null)
+                                <a href="/detail-peminjamanUser/{{ $selectedHeader[0]->id }}/add"
+                                    class="btn btn-primary btn-sm mb-3">Tambah Detail
+                                    Peminjaman</a>
+                            @endif
 
                             <table class="table datatable">
                                 <thead>
@@ -39,6 +42,7 @@
                                         <th style="text-align: center;">Nama Alat</th>
                                         <th style="text-align: center;">Jumlah Peminjaman</th>
                                         <th style="text-align: center;">Kondisi</th>
+                                        <th style="text-align: center;">Spesifikasi</th>
                                         @if ($selectedHeader[0]->status === null)
                                             <th style="text-align: center;">Action</th>
                                         @endif
@@ -51,6 +55,7 @@
                                             <td style="text-align: center;">{{ $detail->nama_alat }}</td>
                                             <td style="text-align: center;">{{ $detail->detail_qty_borrow }}</td>
                                             <td style="text-align: center;">{{ $detail->kondisi_alat }}</td>
+                                            <td style="text-align: center;">{{ $detail->spesifikasi }}</td>
                                             @if ($selectedHeader[0]->status === null)
                                                 <td
                                                     class="d-flex gap-2 flex-wrap justify-content-center align-items-center">

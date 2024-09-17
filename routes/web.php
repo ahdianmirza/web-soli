@@ -122,9 +122,12 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/peminjaman-approval/{id}/', [AlatController::class, 'approvalPeminjaman'])->middleware('userAkses:Admin')->name('peminjaman.approval');
     
     // peminjaman
-    Route::get('/peminjaman', [PeminjamanController::class, 'index'])->middleware('userAkses:Admin');
+    Route::get('/peminjaman-approval', [PeminjamanController::class, 'indexPeminjamanAdmin'])->middleware('userAkses:Admin');
+    Route::get('/detail-peminjaman-approval/{id}', [PeminjamanController::class, 'indexDetailPeminjamanAdmin'])->middleware('userAkses:Admin');
+
     Route::get('/peminjaman/{id}/batal', [PeminjamanController::class, 'batal'])->name('peminjaman.batal');
     Route::get('/peminjaman/pdfall', [PeminjamanController::class, 'downloadPDFAll'])->name('admin.downloadPDFAll');
+    
     //dosen
     Route::get('/dosen', [DosenController::class, 'index'])->middleware('userAkses:Admin');
 
@@ -148,8 +151,11 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/detail-peminjamanUser/{id}/update', [PeminjamanController::class, 'updateDetail'])->middleware('userAkses:User')->name('user.detail-peminjaman.update');
     Route::put('/detail-peminjamanUser/{id}/delete', [PeminjamanController::class, 'deleteDetail'])->middleware('userAkses:User')->name('user.detail-peminjaman.delete');
 
-    // Peminjaman Approval
+    // Peminjaman Approval User
     Route::put('/peminjaman/{id}', [PeminjamanController::class, 'peminjamanApproval'])->middleware('userAkses:User')->name('peminjaman.approval');
+
+    // Detail Peminjaman Approval Admin
+    Route::put('/peminjaman-approval/admin/{id}', [PeminjamanController::class, 'peminjamanApprovalAdmin'])->middleware('userAkses:Admin')->name('peminjaman-approval.admin');
 
     Route::get('/peminjamanUser', [PeminjamanController::class, 'indexUser'])->middleware('userAkses:User')->name('user.peminjaman.index');
     Route::post('/user/peminjaman/store', [PeminjamanController::class, 'store'])->name('user.peminjaman.store');

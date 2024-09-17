@@ -40,7 +40,7 @@
             </li><!-- End Components Nav -->
 
             <li class="nav-item">
-                <a class="nav-link collapsed" href="/peminjaman">
+                <a class="nav-link collapsed" href="/peminjaman-approval">
                     <i class="bi bi-card-list"></i>
                     <span>Peminjaman</span>
                 </a>
@@ -52,7 +52,7 @@
                 </a>
             </li><!-- End Profile Page Nav -->
             <li class="nav-item">
-                <a class="nav-link collapsed" href="logout">
+                <a class="nav-link collapsed" href="/logout">
                     <i class="bi bi-box-arrow-in-left"></i>
                     <span>Logout</span>
                 </a>
