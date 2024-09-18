@@ -27,8 +27,9 @@
                                         <th style="text-align: center;">Nama Header</th>
                                         <th style="text-align: center;">Nama Laboratorium</th>
                                         <th style="text-align: center;">Nama Dosen</th>
-                                        <th style="text-align: center;">Tanggal Peminjaman</th>
-                                        <th style="text-align: center;">Waktu</th>
+                                        <th style="text-align: center;">Tanggal Pinjam</th>
+                                        <th style="text-align: center;">Waktu Pinjam</th>
+                                        <th style="text-align: center;">Waktu Pembuatan</th>
                                         <th style="text-align: center;">Status</th>
                                         <th style="text-align: center;">Action</th>
                                     </tr>
@@ -47,13 +48,18 @@
                                                 {{ date('H:i', strtotime($header->start_time)) }} -
                                                 {{ date('H:i', strtotime($header->end_time)) }}</td>
                                             <td style="text-align: center;">
+                                                {{ date('d M Y - H:i', strtotime($header->header_created_at)) }}</td>
+                                            <td style="text-align: center;">
                                                 @if ($header->status === null)
                                                     <button class="btn btn-danger btn-sm">Belum Dikirim</button>
                                                 @endif
 
-                                                @if ($header->status == 1)
+                                                @if ($header->status == 1 && $header->is_rejected === null)
                                                     <button class="btn btn-default btn-sm text-white"
                                                         style="background-color: #fd7e14">Menunggu</button>
+                                                @endif
+                                                @if ($header->status == 1 && $header->is_rejected == 1)
+                                                    <button class="btn btn-danger btn-sm">Ditolak</button>
                                                 @endif
 
                                                 @if ($header->status == 2)
@@ -149,6 +155,10 @@
                                                                                                     <button
                                                                                                         class="btn btn-default btn-sm text-white"
                                                                                                         style="background-color: #fd7e14">Menunggu</button>
+                                                                                                @endif
+                                                                                                @if ($approval->status_approval === 1 && $approval->result === 'rejected')
+                                                                                                    <button
+                                                                                                        class="btn btn-danger btn-sm">Ditolak</button>
                                                                                                 @endif
 
                                                                                                 @if ($approval->status_approval === 1 && $approval->result === 'approve')

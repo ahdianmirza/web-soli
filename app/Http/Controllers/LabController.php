@@ -5,13 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Departemen;
 use App\Models\Lab;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
-class LabController extends Controller
-{
-    public function index()
-    {
+class LabController extends Controller {
+    public function index() {
         // Mendapatkan user yang sedang login
         $user = Auth::user();
 
@@ -35,10 +33,10 @@ class LabController extends Controller
     public function addLabIndex() {
         $user = Auth::user();
         $departments = Departemen::where("status", 1)->get();
-        
+
         return view('admin.lab.add_lab', [
             "user" => $user,
-            "departments" => $departments
+            "departments" => $departments,
         ]);
     }
 
@@ -50,7 +48,7 @@ class LabController extends Controller
 
         Lab::create([
             "lab" => $validatedData['lab'],
-            "id_departemen" => $validatedData['id_departemen']
+            "id_departemen" => $validatedData['id_departemen'],
         ]);
 
         return redirect('/lab')->with('success', "Data lab berhasil ditambahkan");
@@ -60,13 +58,13 @@ class LabController extends Controller
         $user = Auth::user();
         $departments = Departemen::where("status", 1)->get();
         $selectedLab = Lab::where("id_lab", $id_lab)
-                        ->where("status", 1)
-                        ->get();
-        
+            ->where("status", 1)
+            ->get();
+
         return view('admin.lab.edit_lab', [
             "user" => $user,
             "selectedLab" => $selectedLab,
-            "departments" => $departments
+            "departments" => $departments,
         ]);
     }
 
@@ -86,7 +84,6 @@ class LabController extends Controller
 
     public function deleteLab($id_lab) {
         $selectedLab = Lab::find($id_lab);
-        // die($selectedLab);
         $selectedLab->status = 0;
         $selectedLab->save();
         return redirect('/lab')->with("success", "Data lab berhasil dihapus!");

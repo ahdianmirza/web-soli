@@ -153,6 +153,8 @@ Route::middleware(['auth'])->group(function () {
 
     // Peminjaman Approval User
     Route::put('/peminjaman/{id}', [PeminjamanController::class, 'peminjamanApproval'])->middleware('userAkses:User')->name('peminjaman.approval');
+    // Perbaikan Peminjaman User
+    Route::put('/perbaikan-peminjaman/{id}', [PeminjamanController::class, 'perbaikanPeminjaman'])->middleware('userAkses:User')->name('perbaikan.peminjaman');
 
     // Detail Peminjaman Approval Admin
     Route::put('/peminjaman-approval/admin/{id}', [PeminjamanController::class, 'peminjamanApprovalAdmin'])->middleware('userAkses:Admin')->name('peminjaman-approval.admin');

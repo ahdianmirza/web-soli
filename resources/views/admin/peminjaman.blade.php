@@ -34,8 +34,9 @@
                                     <th style="text-align: center;">Nama Header</th>
                                     <th style="text-align: center;">Nama Laboratorium</th>
                                     <th style="text-align: center;">Nama Dosen</th>
-                                    <th style="text-align: center;">Tanggal Peminjaman</th>
-                                    <th style="text-align: center;">Waktu</th>
+                                    <th style="text-align: center;">Tanggal Pinjam</th>
+                                    <th style="text-align: center;">Waktu Pinjam</th>
+                                    <th style="text-align: center;">Waktu Pembuatan</th>
                                     <th style="text-align: center;">Status</th>
                                     <th style="text-align: center;">Action</th>
                                 </tr>
@@ -54,9 +55,14 @@
                                             {{ date('H:i', strtotime($item->start_time)) }} -
                                             {{ date('H:i', strtotime($item->end_time)) }}</td>
                                         <td style="text-align: center;">
-                                            @if ($item->status == 1)
+                                            {{ date('d M Y - H:i', strtotime($item->approval_created_at)) }}</td>
+                                        <td style="text-align: center;">
+                                            @if ($item->status == 1 && $item->is_rejected === null)
                                                 <button class="btn btn-default btn-sm text-white"
                                                     style="background-color: #fd7e14">Menunggu</button>
+                                            @endif
+                                            @if ($item->status == 1 && $item->is_rejected == 1)
+                                                <button class="btn btn-danger btn-sm">Ditolak</button>
                                             @endif
 
                                             @if ($item->status == 2)

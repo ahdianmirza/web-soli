@@ -14,6 +14,36 @@
         <section class="section">
             <div class="row">
                 <div class="col-lg-12">
+                    @if ($rejectedPeminjaman !== null)
+                        <div class="card">
+                            <div class="card-body mt-3">
+                                <h4>Perbaikan Peminjaman</h4>
+
+                                <form action="/perbaikan-peminjaman/{{ $rejectedPeminjaman->id }}" method="post"
+                                    id="perbaikanPeminjamanForm-{{ $rejectedPeminjaman->id }}">
+                                    @csrf
+                                    @method('PUT')
+
+                                    <p class="text-danger">Note Admin : {{ $rejectedPeminjaman->note }}</p>
+                                    <div>
+                                        <label for="note_resolved">Note Perbaikan</label>
+                                        <textarea id="note_resolved" placeholder="Masukkan note perbaikan" name="note_resolved" class="form-control mt-1"
+                                            required></textarea>
+                                    </div>
+
+                                    <p class="my-1 fst-italic"><span style="color: red;">*</span> Berikan note perbaikan
+                                        ketika
+                                        sudah
+                                        memperbaiki peminjaman</p>
+
+                                    <button onclick="handlePerbaikanPeminjaman(event, {{ $rejectedPeminjaman->id }})"
+                                        type="submit" class="btn btn-primary btn-sm mt-2"
+                                        style="width: 100%">Kirim</button>
+                                </form>
+                            </div>
+                        </div>
+                    @endif
+
                     <div class="card">
                         <div class="card-body mt-3">
                             <h4>Informasi Detail Peminjaman</h4>
@@ -43,7 +73,7 @@
                                         <th style="text-align: center;">Jumlah Peminjaman</th>
                                         <th style="text-align: center;">Kondisi</th>
                                         <th style="text-align: center;">Spesifikasi</th>
-                                        @if ($selectedHeader[0]->status === null)
+                                        @if ($selectedHeader[0]->status === null || $rejectedPeminjaman !== null)
                                             <th style="text-align: center;">Action</th>
                                         @endif
                                     </tr>
@@ -56,7 +86,7 @@
                                             <td style="text-align: center;">{{ $detail->detail_qty_borrow }}</td>
                                             <td style="text-align: center;">{{ $detail->kondisi_alat }}</td>
                                             <td style="text-align: center;">{{ $detail->spesifikasi }}</td>
-                                            @if ($selectedHeader[0]->status === null)
+                                            @if ($selectedHeader[0]->status === null || $rejectedPeminjaman !== null)
                                                 <td
                                                     class="d-flex gap-2 flex-wrap justify-content-center align-items-center">
                                                     <a href="/detail-peminjamanUser/{{ $detail->id }}/edit"
