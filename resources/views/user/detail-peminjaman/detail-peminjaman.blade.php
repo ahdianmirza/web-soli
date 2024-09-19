@@ -17,7 +17,12 @@
                     @if ($rejectedPeminjaman !== null)
                         <div class="card">
                             <div class="card-body mt-3">
-                                <h4>Perbaikan Peminjaman</h4>
+                                @if ($rejectedPeminjaman->status_approval == 1 && $rejectedPeminjaman->result == 'rejected')
+                                    <h4>Perbaikan Peminjaman</h4>
+                                @endif
+                                @if ($rejectedPeminjaman->status_approval == 3 && $rejectedPeminjaman->result == 'rejected')
+                                    <h4>Perbaikan Pengembalian</h4>
+                                @endif
 
                                 <form action="/perbaikan-peminjaman/{{ $rejectedPeminjaman->id }}" method="post"
                                     id="perbaikanPeminjamanForm-{{ $rejectedPeminjaman->id }}">

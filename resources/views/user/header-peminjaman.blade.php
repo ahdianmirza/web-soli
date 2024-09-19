@@ -66,6 +66,18 @@
                                                     <button class="btn btn-default btn-sm text-white"
                                                         style="background-color: #6f42c1">Setuju</button>
                                                 @endif
+
+                                                @if ($header->status == 3 && $header->is_rejected == null)
+                                                    <button class="btn btn-default btn-sm text-white"
+                                                        style="background-color: #20c997">Pengecekan</button>
+                                                @endif
+                                                @if ($header->status == 3 && $header->is_rejected == 1)
+                                                    <button class="btn btn-danger btn-sm">Ditolak</button>
+                                                @endif
+
+                                                @if ($header->status == 4)
+                                                    <button class="btn btn-primary btn-sm">Selesai</button>
+                                                @endif
                                             </td>
                                             <td>
                                                 <div class="d-flex gap-2 flex-wrap justify-content-center">
@@ -116,15 +128,32 @@
                                                                 class="bi bi-clock-history"></i></button>
                                                     @endif
 
+                                                    @if ($header->status == 2)
+                                                        <form action="/pengembalian/{{ $header->id }}" method="post"
+                                                            id="pengembalianHeaderForm-{{ $header->id }}">
+                                                            @csrf
+                                                            @method('put')
+
+                                                            <input type="hidden" name="result" value="waiting">
+                                                            <input type="hidden" name="status" value="3">
+                                                            <button
+                                                                onclick="handlePengembalianHeader(event, {{ $header->id }})"
+                                                                type="submit" class="btn btn-default btn-sm text-white"
+                                                                style="background-color: #20c997"><i
+                                                                    class="bi bi-check-lg"></i></button>
+                                                        </form>
+                                                    @endif
+
                                                     <!-- Modal -->
                                                     <div class="modal fade" id="historyModal-{{ $header->id }}"
                                                         tabindex="-1" aria-hidden="true">
                                                         <div class="modal-dialog modal-lg">
                                                             <div class="modal-content">
                                                                 <div class="modal-header">
-                                                                    <h1 class="modal-title fs-5">Approval History</h1>
+                                                                    <h1 class="modal-title fs-5">History Persetujuan</h1>
                                                                     <button type="button" class="btn-close"
-                                                                        data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                        data-bs-dismiss="modal"
+                                                                        aria-label="Close"></button>
                                                                 </div>
                                                                 <div class="modal-body">
                                                                     <?php
@@ -133,7 +162,8 @@
 
                                                                     @foreach ($selectedHistory as $history)
                                                                         @if ($history->status_approval == 1)
-                                                                            <h2 class="modal-title fs-5">Approval Peminjaman
+                                                                            <h2 class="modal-title fs-5">
+                                                                                Persetujuan Peminjaman
                                                                             </h2>
                                                                             <table class="table">
                                                                                 <thead>
@@ -175,6 +205,59 @@
                                                                                     @endforeach
                                                                                 </tbody>
                                                                             </table>
+                                                                        @endif
+                                                                    @endforeach
+
+                                                                    <?php
+                                                                    $selectedPengembalianHistory = $pengembalianHistory->where('id_header', $header->id);
+                                                                    ?>
+                                                                    @foreach ($selectedPengembalianHistory as $history)
+                                                                        @if ($history->status_approval == 3)
+                                                                            <div class="pt-3">
+                                                                                <h2 class="modal-title fs-5">
+                                                                                    Persetujuan Pengembalian
+                                                                                </h2>
+                                                                                <table class="table">
+                                                                                    <thead>
+                                                                                        <tr>
+                                                                                            <th scope="col">Nama</th>
+                                                                                            <th scope="col">Status</th>
+                                                                                            <th scope="col">Note</th>
+                                                                                            <th scope="col">Waktu</th>
+                                                                                        </tr>
+                                                                                    </thead>
+                                                                                    <tbody>
+                                                                                        @foreach ($selectedPengembalianHistory as $approval)
+                                                                                            <tr>
+                                                                                                <td>{{ $approval->user_name }}
+                                                                                                </td>
+
+                                                                                                <td>
+                                                                                                    @if ($approval->status_approval === 3 && $approval->result === 'waiting')
+                                                                                                        <button
+                                                                                                            class="btn btn-default btn-sm text-white"
+                                                                                                            style="background-color: #20c997">Pengecekan</button>
+                                                                                                    @endif
+                                                                                                    @if ($approval->status_approval === 3 && $approval->result === 'rejected')
+                                                                                                        <button
+                                                                                                            class="btn btn-danger btn-sm">Ditolak</button>
+                                                                                                    @endif
+
+                                                                                                    @if ($approval->status_approval === 3 && $approval->result === 'approve')
+                                                                                                        <button
+                                                                                                            class="btn btn-primary btn-sm">Selesai</button>
+                                                                                                    @endif
+                                                                                                </td>
+
+                                                                                                <td>{{ $approval->note }}
+                                                                                                </td>
+                                                                                                <td>{{ date('d M Y - H:i', strtotime($approval->updated_at)) }}
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                        @endforeach
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            </div>
                                                                         @endif
                                                                     @endforeach
                                                                 </div>

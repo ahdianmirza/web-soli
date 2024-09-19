@@ -5,13 +5,13 @@ use App\Http\Controllers\AlatController;
 use App\Http\Controllers\DepartemenController;
 use App\Http\Controllers\DosenController;
 use App\Http\Controllers\FakultasController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\LabController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PeminjamanController;
 use App\Http\Controllers\SuperadminController;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,7 +22,7 @@ use App\Http\Controllers\UserController;
 | routes are loaded by the RouteServiceProvider and all of them will
 | be assigned to the "web" middleware group. Make something great!
 |
-*/
+ */
 
 Route::get('/', function () {
     return view('home.beranda');
@@ -31,7 +31,6 @@ Route::get('/', function () {
 Route::get('/login', function () {
     return view('cth.inilamanlogin');
 });
-
 
 Route::middleware(['guest'])->group(function () {
     Route::get('/fakultas', [IndexController::class, 'showFakultas']);
@@ -87,7 +86,6 @@ Route::get('/home', function () {
     return redirect('/admin');
 });
 
-
 Route::middleware(['auth'])->group(function () {
     //Admin
     Route::get('/admin', [AdminController::class, 'index'])->middleware('userAkses:Admin');
@@ -99,7 +97,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/departemen/edit-data/{id}', [DepartemenController::class, 'getEditData'])->middleware('userAkses:Admin');
     Route::post('/departemen/delete/{id}', [DepartemenController::class, 'destroy'])->middleware('userAkses:Admin')->name('departemen.delete');
     Route::put('/departemen/{id}', [DepartemenController::class, 'update'])->name('departemen.update');
-    
+
     //lab
     Route::get('/lab', [LabController::class, 'index'])->middleware('userAkses:Admin');
     Route::get('/lab/add', [LabController::class, 'addLabIndex'])->middleware('userAkses:Admin');
@@ -107,7 +105,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/lab/{id_lab}/edit', [LabController::class, 'editLabIndex'])->middleware('userAkses:Admin');
     Route::put('/lab/{id_lab}/edit', [LabController::class, 'editLab'])->middleware('userAkses:Admin');
     Route::put('/lab/{id_lab}/delete', [LabController::class, 'deleteLab'])->middleware('userAkses:Admin');
-    
+
     //alat
     Route::get('/alat', [AlatController::class, 'index'])->middleware('userAkses:Admin');
     Route::get('/alat/add', [AlatController::class, 'addAlatIndex'])->middleware('userAkses:Admin');
@@ -120,14 +118,18 @@ Route::middleware(['auth'])->group(function () {
 
     // User Send Approval
     Route::put('/peminjaman-approval/{id}/', [AlatController::class, 'approvalPeminjaman'])->middleware('userAkses:Admin')->name('peminjaman.approval');
-    
-    // peminjaman
+
+    // Peminjaman
     Route::get('/peminjaman-approval', [PeminjamanController::class, 'indexPeminjamanAdmin'])->middleware('userAkses:Admin');
     Route::get('/detail-peminjaman-approval/{id}', [PeminjamanController::class, 'indexDetailPeminjamanAdmin'])->middleware('userAkses:Admin');
 
+    // Pengembalian
+    Route::get('/pengembalian-approval', [PeminjamanController::class, 'indexPengembalianAdmin'])->middleware('userAkses:Admin');
+    Route::get('/detail-pengembalian-approval/{id}', [PeminjamanController::class, 'indexDetailPengembalianAdmin'])->middleware('userAkses:Admin');
+
     Route::get('/peminjaman/{id}/batal', [PeminjamanController::class, 'batal'])->name('peminjaman.batal');
     Route::get('/peminjaman/pdfall', [PeminjamanController::class, 'downloadPDFAll'])->name('admin.downloadPDFAll');
-    
+
     //dosen
     Route::get('/dosen', [DosenController::class, 'index'])->middleware('userAkses:Admin');
 
@@ -142,7 +144,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/header-peminjamanUser/{id}/edit', [PeminjamanController::class, 'editHeader'])->middleware('userAkses:User')->name('user.edit-header-peminjaman.index');
     Route::put('/header-peminjamanUser/{id}/edit', [PeminjamanController::class, 'updateHeader'])->middleware('userAkses:User')->name('user.header-peminjaman.update');
     Route::put('/header-peminjamanUser/{id}/delete', [PeminjamanController::class, 'deleteHeader'])->middleware('userAkses:User')->name('user.header-peminjaman.delete');
-    
+
     // Detail peminjaman User
     Route::get('/detail-peminjamanUser/{id}', [PeminjamanController::class, 'indexDetail'])->middleware('userAkses:User')->name('user.detail-peminjaman.index');
     Route::get('/detail-peminjamanUser/{id}/add', [PeminjamanController::class, 'addDetail'])->middleware('userAkses:User')->name('user.add-detail-peminjaman.index');
@@ -155,9 +157,13 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/peminjaman/{id}', [PeminjamanController::class, 'peminjamanApproval'])->middleware('userAkses:User')->name('peminjaman.approval');
     // Perbaikan Peminjaman User
     Route::put('/perbaikan-peminjaman/{id}', [PeminjamanController::class, 'perbaikanPeminjaman'])->middleware('userAkses:User')->name('perbaikan.peminjaman');
+    // Pengembalian Approval User
+    Route::put('/pengembalian/{id}', [PeminjamanController::class, 'pengembalianApproval'])->middleware('userAkses:User')->name('pengembalian.approval');
 
     // Detail Peminjaman Approval Admin
     Route::put('/peminjaman-approval/admin/{id}', [PeminjamanController::class, 'peminjamanApprovalAdmin'])->middleware('userAkses:Admin')->name('peminjaman-approval.admin');
+    // Detail Pengembalian Approval Admin
+    Route::put('/pengembalian-approval/admin/{id}', [PeminjamanController::class, 'pengembalianApprovalAdmin'])->middleware('userAkses:Admin')->name('pengembalian-approval.admin');
 
     Route::get('/peminjamanUser', [PeminjamanController::class, 'indexUser'])->middleware('userAkses:User')->name('user.peminjaman.index');
     Route::post('/user/peminjaman/store', [PeminjamanController::class, 'store'])->name('user.peminjaman.store');
@@ -167,7 +173,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/peminjaman/kembalikan/{id}', [PeminjamanController::class, 'kembalikan'])->name('peminjaman.kembalikan');
     Route::post('/peminjaman/batal/{id}', [PeminjamanController::class, 'batalpengembalian'])->name('peminjaman.batalpengembalian');
     Route::get('/peminjaman/{id}/pdf', [PeminjamanController::class, 'downloadPDF'])->name('peminjaman.downloadPDF');
-
 
     //superadmin
     Route::get('/superadmin', [SuperadminController::class, 'index'])->middleware('userAkses:Superadmin');

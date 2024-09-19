@@ -28,7 +28,16 @@ class PeminjamanController extends Controller {
     public function indexPeminjamanAdmin() {
         $user = Auth::user();
         $idDepartemen = $user->id_departemen;
-        $peminjamanList = DB::table('approval_peminjamen as approval')->select('header.id as id_header', 'header.*', 'approval.id as approval_id', 'lab.id_departemen', 'users.name as user_name', 'lab.lab as lab_name', 'approval.created_at as approval_created_at')->join('header_transaksis as header', 'approval.id_header', 'header.id')->join('lab', 'header.id_lab', 'lab.id_lab')->join('users', 'header.user_id', 'users.id')->where('lab.id_departemen', $idDepartemen)->where('approval.result', '!=', 'approve')->where('header.is_deleted', null)->orderBy('header.updated_at', 'desc')->get();
+        $peminjamanList = DB::table('approval_peminjamen as approval')
+            ->select('header.id as id_header', 'header.*', 'approval.id as approval_id', 'lab.id_departemen', 'users.name as user_name', 'lab.lab as lab_name', 'approval.created_at as approval_created_at', 'approval.status_approval', 'approval.result')
+            ->join('header_transaksis as header', 'approval.id_header', 'header.id')
+            ->join('lab', 'header.id_lab', 'lab.id_lab')
+            ->join('users', 'header.user_id', 'users.id')
+            ->where('lab.id_departemen', $idDepartemen)
+            ->where('header.is_deleted', null)
+            ->where('approval.status_approval', "<", 2)
+            ->orderBy('header.updated_at', 'desc')
+            ->get();
 
         return view('admin.peminjaman', [
             'user' => $user,
@@ -157,41 +166,150 @@ class PeminjamanController extends Controller {
                     $selectedHeader->is_rejected = null;
                     $selectedHeader->save();
 
-                    ApprovalPeminjaman::create([
-                        'id_header' => $selectedApprovalPeminjaman->id_header,
-                        'status_approval' => $request->status,
-                        'result' => 'waiting',
-                        'id_departemen' => $selectedApprovalPeminjaman->id_departemen,
-                    ]);
-
                     return redirect('/peminjaman-approval')->with('success', 'Persetujuan peminjaman berhasil dikirim');
                 }
             }
         }
     }
 
-    public function batal($id) {
-        $peminjaman = Transaksi::find($id);
+    public function pengembalianApproval(Request $request, $id) {
+        $selectedHeader = HeaderTransaksi::find($id);
+        $headerTransaksi = DB::table('header_transaksis as header')->select('header.*', 'lab.id_departemen')->join('lab', 'header.id_lab', 'lab.id_lab')->where('header.id', $id)->first();
 
-        if (!$peminjaman) {
-            return redirect()->back()->with('error', 'Peminjaman tidak ditemukan.');
+        if ($request->status == 3) {
+            ApprovalPeminjaman::create([
+                'id_header' => $id,
+                'status_approval' => $request->status,
+                'result' => $request->result,
+                'id_departemen' => $headerTransaksi->id_departemen,
+            ]);
+
+            $selectedHeader->status = $request->status;
+            $selectedHeader->save();
         }
+        return back()->with('success', 'Pengembalian peminjaman berhasil dikirim');
+    }
 
-        $peminjaman->approve = 1; // Atau status lain yang Anda inginkan
-        $peminjaman->save();
+    public function indexPengembalianAdmin() {
+        $user = Auth::user();
+        $idDepartemen = $user->id_departemen;
+        $pengembalianList = DB::table('approval_peminjamen as approval')
+            ->select('header.id as id_header', 'header.*', 'approval.id as approval_id', 'lab.id_departemen', 'users.name as user_name', 'lab.lab as lab_name', 'approval.created_at as approval_created_at', 'approval.status_approval', 'approval.result')
+            ->join('header_transaksis as header', 'approval.id_header', 'header.id')
+            ->join('lab', 'header.id_lab', 'lab.id_lab')
+            ->join('users', 'header.user_id', 'users.id')
+            ->where('lab.id_departemen', $idDepartemen)
+            ->where('header.is_deleted', null)
+            ->where('approval.status_approval', ">", 2)
+            ->orderBy('header.updated_at', 'desc')
+            ->get();
 
-        return redirect()->back()->with('success', 'Peminjaman berhasil dibatalkan.');
+        return view('admin.pengembalian.pengembalian-approval', [
+            'user' => $user,
+            'pengembalianList' => $pengembalianList,
+        ]);
+    }
+
+    public function indexDetailPengembalianAdmin($id) {
+        $user = Auth::user();
+        $selectedApprovalPengembalian = ApprovalPeminjaman::find($id);
+        $selectedHeader = DB::table('header_transaksis as header')
+            ->select('header.*', 'users.name as user_name', 'lab.lab as lab_name')
+            ->join('users', 'header.user_id', '=', 'users.id')
+            ->join('lab', 'header.id_lab', '=', 'lab.id_lab')
+            ->where('header.id', $selectedApprovalPengembalian->id_header)
+            ->where('header.is_deleted', null)
+            ->first();
+        $detailList = DB::table('detail_transaksis as detail')
+            ->select('detail.id', 'detail.id_alat', 'alat.nama_alat', 'alat.spesifikasi', 'detail.qty_borrow as jumlah', 'alat.kondisi_alat')
+            ->join('alat', 'detail.id_alat', '=', 'alat.id_alat')
+            ->where('detail.id_header', $selectedApprovalPengembalian->id_header)
+            ->where('is_deleted', null)
+            ->get();
+
+        return view('admin.pengembalian.detail-pengembalian-approval', [
+            'user' => $user,
+            'selectedHeader' => $selectedHeader,
+            'detailList' => $detailList,
+            'selectedApprovalPengembalian' => $selectedApprovalPengembalian,
+        ]);
+    }
+
+    public function pengembalianApprovalAdmin(Request $request, $id) {
+        $validatedData = $request->validate([
+            'note' => 'required|string|max:255',
+            'result' => 'required|string',
+        ], [
+            'note' => 'Note masih kosong',
+            'result' => 'Pilih setuju atau tolak',
+        ]);
+
+        $selectedApprovalPengembalian = ApprovalPeminjaman::find($id);
+        $selectedHeader = HeaderTransaksi::find($selectedApprovalPengembalian->id_header);
+        $detailPengembalianList = DetailTransaksi::where('id_header', $selectedApprovalPengembalian->id_header)
+            ->where("is_deleted", null)
+            ->get();
+
+        if ($request->status == 3) {
+            if ($validatedData['result'] == "approve") {
+                foreach ($detailPengembalianList as $detail) {
+                    $selectedAlat = Alat::find($detail->id_alat);
+                    $selectedAlat->qty_borrow -= $detail->qty_borrow;
+                    if ($selectedAlat->qty_borrow == 0) {
+                        $selectedAlat->qty_borrow = null;
+                    }
+                    $selectedAlat->save();
+                }
+
+                $selectedApprovalPengembalian->note = $validatedData['note'];
+                $selectedApprovalPengembalian->result = $validatedData['result'];
+                $selectedApprovalPengembalian->save();
+
+                $selectedHeader->status = $request->status + 1;
+                $selectedHeader->is_rejected = null;
+                $selectedHeader->save();
+
+                return redirect('/pengembalian-approval')->with('success', 'Persetujuan pengembalian berhasil dikirim');
+            } else if ($validatedData['result'] == "rejected") {
+                $selectedHeader->is_rejected = 1;
+                $selectedHeader->save();
+
+                $selectedApprovalPengembalian->note = $validatedData['note'];
+                $selectedApprovalPengembalian->result = $validatedData['result'];
+                $selectedApprovalPengembalian->is_resolved = null;
+                $selectedApprovalPengembalian->save();
+
+                return redirect('/pengembalian-approval')->with('success', 'Persetujuan pengembalian berhasil dikirim');
+            }
+        }
     }
 
     public function indexHeader() {
         $user = Auth::user();
-        $headerPeminjaman = DB::table('header_transaksis as header')->select('header.id', 'header.header_name', 'header.dosen', 'header.tanggal_pinjam', 'header.start_time', 'header.end_time', 'header.status', 'header.is_rejected', 'header.created_at as header_created_at', 'lab.lab', 'users.name as user_name')->join('lab', 'header.id_lab', '=', 'lab.id_lab')->join('users', 'header.user_id', '=', 'users.id')->where('header.is_deleted', null)->orderBy('header.updated_at', 'desc')->get();
-        $approvalHistory = DB::table('approval_peminjamen as approval')->select('approval.*', 'users.id as user_id', 'users.name as user_name')->join('users', 'approval.id_departemen', 'users.id_departemen')->where('approval.status_approval', 1)->get();
+        $headerPeminjaman = DB::table('header_transaksis as header')
+            ->select('header.id', 'header.header_name', 'header.dosen', 'header.tanggal_pinjam', 'header.start_time', 'header.end_time', 'header.status', 'header.is_rejected', 'header.created_at as header_created_at', 'lab.lab', 'users.name as user_name')
+            ->join('lab', 'header.id_lab', '=', 'lab.id_lab')
+            ->join('users', 'header.user_id', '=', 'users.id')
+            ->where('header.is_deleted', null)
+            ->orderBy('header.updated_at', 'desc')
+            ->get();
+        $approvalHistory = DB::table('approval_peminjamen as approval')
+            ->select('approval.*', 'users.id as user_id', 'users.name as user_name')
+            ->join('users', 'approval.id_departemen', 'users.id_departemen')
+            ->where('approval.status_approval', 1)
+            ->get();
+
+        $pengembalianHistory = DB::table('approval_peminjamen as approval')
+            ->select('approval.*', 'users.id as user_id', 'users.name as user_name')
+            ->join('users', 'approval.id_departemen', 'users.id_departemen')
+            ->where('approval.status_approval', 3)
+            ->get();
 
         return view('user.header-peminjaman', [
             'user' => $user,
             'headerPeminjaman' => $headerPeminjaman,
             'approvalHistory' => $approvalHistory,
+            'pengembalianHistory' => $pengembalianHistory,
         ]);
     }
 

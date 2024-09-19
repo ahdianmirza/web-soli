@@ -46,6 +46,12 @@
                 </a>
             </li><!-- End Profile Page Nav -->
             <li class="nav-item">
+                <a class="nav-link collapsed" href="/pengembalian-approval">
+                    <i class="bi bi-check-square"></i>
+                    <span>Pengembalian</span>
+                </a>
+            </li><!-- End Profile Page Nav -->
+            <li class="nav-item">
                 <a class="nav-link collapsed" href="dosen">
                     <i class="bi bi-person"></i>
                     <span>Dosen</span>

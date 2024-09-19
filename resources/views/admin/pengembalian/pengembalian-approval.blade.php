@@ -1,26 +1,21 @@
 @extends('layout.admin')
 @section('content')
-    <main id="main" class="main">
-
+    <main class="main" id="main">
         <div class="pagetitle">
-            <h1>Approval Peminjaman</h1>
+            <h1>Approval Pengembalian</h1>
             <nav>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="/admin">Home</a></li>
-                    <li class="breadcrumb-item">Approval Peminjaman</li>
+                    <li class="breadcrumb-item">Approval Pengembalian</li>
                 </ol>
             </nav>
         </div><!-- End Page Title -->
 
         <div class="row">
             <div class="col-lg-12">
-
                 <div class="card">
                     <div class="card-body mt-3">
-                        <!-- Table with stripped rows -->
                         <table class="table datatable">
-                            <a type="button" style="margin-left: 10px; margin-bottom:10px;"
-                                class="btn  btn-outline-info btn-sm" onclick="downloadPDFAll()">Download PDF</a>
                             <thead>
                                 <tr>
                                     <th style="text-align: center;">No</th>
@@ -36,7 +31,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($peminjamanList as $item)
+                                @foreach ($pengembalianList as $item)
                                     <tr>
                                         <td style="text-align: center;">{{ $loop->iteration }}</td>
                                         <td style="text-align: center;">{{ $item->user_name }}</td>
@@ -51,21 +46,21 @@
                                         <td style="text-align: center;">
                                             {{ date('d M Y - H:i', strtotime($item->approval_created_at)) }}</td>
                                         <td style="text-align: center;">
-                                            @if ($item->status_approval == 1 && $item->result == 'waiting')
+                                            @if ($item->status_approval == 3 && $item->result == 'waiting')
                                                 <button class="btn btn-default btn-sm text-white"
-                                                    style="background-color: #fd7e14">Menunggu</button>
+                                                    style="background-color: #20c997">Pengecekan</button>
                                             @endif
-                                            @if ($item->status_approval == 1 && $item->result == 'rejected')
+
+                                            @if ($item->status_approval == 3 && $item->result == 'rejected')
                                                 <button class="btn btn-danger btn-sm">Ditolak</button>
                                             @endif
 
-                                            @if ($item->status_approval == 1 && $item->result == 'approve')
-                                                <button class="btn btn-default btn-sm text-white"
-                                                    style="background-color: #6f42c1">Setuju</button>
+                                            @if ($item->status_approval == 3 && $item->result == 'approve')
+                                                <button class="btn btn-primary btn-sm">Selesai</button>
                                             @endif
                                         </td>
                                         <td style="text-align: center;">
-                                            <a href="/detail-peminjaman-approval/{{ $item->approval_id }}"
+                                            <a href="/detail-pengembalian-approval/{{ $item->approval_id }}"
                                                 class="btn btn-primary btn-sm"><i class="bi bi-eye-fill"></i></i></a>
                                         </td>
                                     </tr>
@@ -76,12 +71,5 @@
                 </div>
             </div>
         </div>
-        </section>
     </main>
-
-    <script>
-        function downloadPDFAll() {
-            window.location.href = `/peminjaman/pdfall`;
-        }
-    </script>
 @endsection
