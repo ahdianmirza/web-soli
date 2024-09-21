@@ -34,9 +34,9 @@
                                 </div>
 
                                 <div class="form-group mb-3">
-                                    <label for="qty_borrow">Jumlah Peminjaman</label>
+                                    <label for="qty_borrow">Jumlah Alat</label>
                                     <input type="number" class="form-control mt-1" id="qty_borrow" name="qty_borrow"
-                                        placeholder="Masukkan jumlah peminjaman" value="{{ $selectedDetail->qty_borrow }}"
+                                        placeholder="Masukkan jumlah alat" value="{{ $selectedDetail->qty_borrow }}"
                                         required>
                                 </div>
 

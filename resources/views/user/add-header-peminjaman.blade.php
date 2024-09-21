@@ -2,11 +2,11 @@
 @section('content')
     <main class="main" id="main">
         <div class="pagetitle">
-            <h1>Tambah Header Peminjaman</h1>
+            <h1>Tambah Formulir Peminjaman</h1>
             <nav>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="/user">Home</a></li>
-                    <li class="breadcrumb-item">Tambah Header Peminjaman</li>
+                    <li class="breadcrumb-item">Tambah Formulir Peminjaman</li>
                 </ol>
             </nav>
         </div><!-- End Page Title -->
@@ -20,9 +20,9 @@
                                 @csrf
 
                                 <div class="form-group mb-3">
-                                    <label for="header_name">Nama Header</label>
+                                    <label for="header_name">Nama Formulir</label>
                                     <input type="text" class="form-control mt-1" id="header_name" name="header_name"
-                                        placeholder="Masukkan nama header" required>
+                                        placeholder="Masukkan nama formulir" required>
                                 </div>
 
                                 <div class="form-group mb-3">
@@ -38,9 +38,9 @@
                                 </div>
 
                                 <div class="form-group mb-3">
-                                    <label for="dosenName">Nama Dosen</label>
+                                    <label for="dosenName">Nama Dosen Pembimbing</label>
                                     <select class="form-control mt-1" id="dosenName" name="dosen">
-                                        <option selected disabled>Pilih dosen</option>
+                                        <option selected disabled>Pilih dosen pembimbing</option>
                                         @foreach ($dosenList as $dosen)
                                             <option value="{{ $dosen->nama_dosen }}">
                                                 {{ $dosen->nama_dosen }}

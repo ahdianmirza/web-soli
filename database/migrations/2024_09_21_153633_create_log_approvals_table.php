@@ -9,14 +9,13 @@ return new class extends Migration {
      * Run the migrations.
      */
     public function up(): void {
-        Schema::create('approval_peminjamen', function (Blueprint $table) {
+        Schema::create('log_approvals', function (Blueprint $table) {
             $table->id();
-            $table->integer("id_header")->nullable();
-            $table->integer("id_departemen")->nullable();
-            $table->integer("status_approval")->nullable();
+            $table->integer("id_approval")->nullable();
+            $table->integer("status_log")->nullable();
             $table->string("result")->nullable();
-            $table->integer("is_rejected")->nullable();
-            $table->integer("is_resolved")->nullable();
+            $table->string("note")->nullable();
+            $table->string("note_resolved")->nullable();
             $table->string("created_by")->nullable();
             $table->timestamps();
         });
@@ -26,6 +25,6 @@ return new class extends Migration {
      * Reverse the migrations.
      */
     public function down(): void {
-        Schema::dropIfExists('approval_peminjamen');
+        Schema::dropIfExists('log_approvals');
     }
 };

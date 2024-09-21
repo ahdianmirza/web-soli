@@ -3,11 +3,11 @@
     <main id="main" class="main">
 
         <div class="pagetitle">
-            <h1>Approval Peminjaman</h1>
+            <h1>Persetujuan Peminjaman</h1>
             <nav>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="/admin">Home</a></li>
-                    <li class="breadcrumb-item">Approval Peminjaman</li>
+                    <li class="breadcrumb-item">Persetujuan Peminjaman</li>
                 </ol>
             </nav>
         </div><!-- End Page Title -->
@@ -25,9 +25,9 @@
                                 <tr>
                                     <th style="text-align: center;">No</th>
                                     <th style="text-align: center;">Nama Peminjam</th>
-                                    <th style="text-align: center;">Nama Header</th>
+                                    <th style="text-align: center;">Nama Formulir</th>
                                     <th style="text-align: center;">Nama Laboratorium</th>
-                                    <th style="text-align: center;">Nama Dosen</th>
+                                    <th style="text-align: center;">Nama Dosen Pembimbing</th>
                                     <th style="text-align: center;">Tanggal Pinjam</th>
                                     <th style="text-align: center;">Waktu Pinjam</th>
                                     <th style="text-align: center;">Waktu Pembuatan</th>
@@ -55,13 +55,33 @@
                                                 <button class="btn btn-default btn-sm text-white"
                                                     style="background-color: #fd7e14">Menunggu</button>
                                             @endif
-                                            @if ($item->status_approval == 1 && $item->result == 'rejected')
+                                            @if ($item->status_approval == 1 && $item->result == 'rejected' && $item->is_resolved == null)
                                                 <button class="btn btn-danger btn-sm">Ditolak</button>
                                             @endif
+                                            @if ($item->status_approval == 1 && $item->result == 'rejected' && $item->is_resolved)
+                                                <button class="btn btn-default btn-sm text-white"
+                                                    style="background-color: #fd7e14">Diperbaiki</button>
+                                            @endif
 
-                                            @if ($item->status_approval == 1 && $item->result == 'approve')
+                                            @if ($item->status_approval == 2 && $item->result == 'approve')
                                                 <button class="btn btn-default btn-sm text-white"
                                                     style="background-color: #6f42c1">Setuju</button>
+                                            @endif
+
+                                            @if ($item->status_approval == 3 && $item->result == 'waiting')
+                                                <button class="btn btn-default btn-sm text-white"
+                                                    style="background-color: #20c997">Pengecekan</button>
+                                            @endif
+                                            @if ($item->status_approval == 3 && $item->result == 'rejected' && $item->is_resolved == null)
+                                                <button class="btn btn-danger btn-sm">Ditolak</button>
+                                            @endif
+                                            @if ($item->status_approval == 3 && $item->result == 'rejected' && $item->is_resolved)
+                                                <button class="btn btn-default btn-sm text-white"
+                                                    style="background-color: #20c997">Diperbaiki</button>
+                                            @endif
+
+                                            @if ($item->status_approval == 4 && $item->result == 'approve')
+                                                <button class="btn btn-primary btn-sm">Selesai</button>
                                             @endif
                                         </td>
                                         <td style="text-align: center;">

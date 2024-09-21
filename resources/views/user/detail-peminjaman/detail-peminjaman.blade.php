@@ -29,8 +29,15 @@
                                     @csrf
                                     @method('PUT')
 
-                                    <p class="text-danger">Note Admin : {{ $rejectedPeminjaman->note }}</p>
+                                    <p class="text-danger">Note Admin : {{ $selectedLog->note }}</p>
                                     <div>
+                                        @if ($rejectedPeminjaman->status_approval == 1 && $rejectedPeminjaman->result == 'rejected')
+                                            <input type="hidden" name="status" value="1">
+                                        @endif
+                                        @if ($rejectedPeminjaman->status_approval == 3 && $rejectedPeminjaman->result == 'rejected')
+                                            <input type="hidden" name="status" value="3">
+                                        @endif
+
                                         <label for="note_resolved">Note Perbaikan</label>
                                         <textarea id="note_resolved" placeholder="Masukkan note perbaikan" name="note_resolved" class="form-control mt-1"
                                             required></textarea>
@@ -59,15 +66,17 @@
                                 <p class="my-0">Nama Dosen : {{ $selectedHeader[0]->dosen }}</p>
                                 <p class="my-0">Tanggal Peminjaman :
                                     {{ date('d M Y', strtotime($selectedHeader[0]->tanggal_pinjam)) }}</p>
-                                <p class="my-0">Waktu : {{ date('H:i', strtotime($selectedHeader[0]->start_time)) }} -
+                                <p class="my-0">Waktu Dibuat :
+                                    {{ date('d M Y - H:i', strtotime($selectedHeader[0]->created_at)) }}</p>
+                                <p class="my-0">Waktu Peminjaman :
+                                    {{ date('H:i', strtotime($selectedHeader[0]->start_time)) }} -
                                     {{ date('H:i', strtotime($selectedHeader[0]->end_time)) }}</p>
                             </span>
                             <hr>
 
                             @if ($selectedHeader[0]->status === null)
                                 <a href="/detail-peminjamanUser/{{ $selectedHeader[0]->id }}/add"
-                                    class="btn btn-primary btn-sm mb-3">Tambah Detail
-                                    Peminjaman</a>
+                                    class="btn btn-primary btn-sm mb-3">Tambah <i class="bi bi-plus-lg"></i></a>
                             @endif
 
                             <table class="table datatable">

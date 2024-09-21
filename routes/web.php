@@ -127,7 +127,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pengembalian-approval', [PeminjamanController::class, 'indexPengembalianAdmin'])->middleware('userAkses:Admin');
     Route::get('/detail-pengembalian-approval/{id}', [PeminjamanController::class, 'indexDetailPengembalianAdmin'])->middleware('userAkses:Admin');
 
-    Route::get('/peminjaman/{id}/batal', [PeminjamanController::class, 'batal'])->name('peminjaman.batal');
     Route::get('/peminjaman/pdfall', [PeminjamanController::class, 'downloadPDFAll'])->name('admin.downloadPDFAll');
 
     //dosen

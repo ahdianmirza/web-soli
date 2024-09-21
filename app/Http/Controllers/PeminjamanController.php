@@ -6,6 +6,7 @@ use App\Models\Alat;
 use App\Models\ApprovalPeminjaman;
 use App\Models\DetailTransaksi;
 use App\Models\HeaderTransaksi;
+use App\Models\LogApproval;
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,13 +30,12 @@ class PeminjamanController extends Controller {
         $user = Auth::user();
         $idDepartemen = $user->id_departemen;
         $peminjamanList = DB::table('approval_peminjamen as approval')
-            ->select('header.id as id_header', 'header.*', 'approval.id as approval_id', 'lab.id_departemen', 'users.name as user_name', 'lab.lab as lab_name', 'approval.created_at as approval_created_at', 'approval.status_approval', 'approval.result')
+            ->select('header.id as id_header', 'header.*', 'approval.id as approval_id', 'lab.id_departemen', 'users.name as user_name', 'lab.lab as lab_name', 'approval.created_at as approval_created_at', 'approval.status_approval', 'approval.result', 'approval.is_resolved')
             ->join('header_transaksis as header', 'approval.id_header', 'header.id')
             ->join('lab', 'header.id_lab', 'lab.id_lab')
             ->join('users', 'header.user_id', 'users.id')
             ->where('lab.id_departemen', $idDepartemen)
             ->where('header.is_deleted', null)
-            ->where('approval.status_approval', "<", 2)
             ->orderBy('header.updated_at', 'desc')
             ->get();
 
@@ -48,6 +48,9 @@ class PeminjamanController extends Controller {
     public function indexDetailPeminjamanAdmin($id) {
         $user = Auth::user();
         $selectedApprovalPeminjaman = ApprovalPeminjaman::find($id);
+        $selectedLog = LogApproval::where("id_approval", $id)
+            ->orderBy("created_at", "desc")
+            ->first();
 
         $selectedHeader = DB::table('header_transaksis as header')
             ->select('header.*', 'users.name as user_name', 'lab.lab as lab_name')
@@ -68,10 +71,12 @@ class PeminjamanController extends Controller {
             'selectedHeader' => $selectedHeader,
             'detailList' => $detailList,
             'selectedApprovalPeminjaman' => $selectedApprovalPeminjaman,
+            'selectedLog' => $selectedLog,
         ]);
     }
 
     public function peminjamanApproval(Request $request, $id) {
+        $user = Auth::user();
         $selectedHeader = HeaderTransaksi::find($id);
         $headerTransaksi = DB::table('header_transaksis as header')->select('header.*', 'lab.id_departemen')->join('lab', 'header.id_lab', 'lab.id_lab')->where('header.id', $id)->first();
 
@@ -84,18 +89,28 @@ class PeminjamanController extends Controller {
         if ($request->status == 1) {
             ApprovalPeminjaman::create([
                 'id_header' => $id,
+                'id_departemen' => $headerTransaksi->id_departemen,
                 'status_approval' => $request->status,
                 'result' => $request->result,
-                'id_departemen' => $headerTransaksi->id_departemen,
+                'created_by' => $user->id,
             ]);
 
             $selectedHeader->status = $request->status;
             $selectedHeader->save();
+
+            $createdApprovalPeminjaman = ApprovalPeminjaman::where("id_header", $id)->first();
+            LogApproval::create([
+                'id_approval' => $createdApprovalPeminjaman->id,
+                'status_log' => $request->status,
+                'result' => $request->result,
+                'created_by' => $user->id,
+            ]);
         }
         return back()->with('success', 'Pengiriman peminjaman berhasil');
     }
 
     public function perbaikanPeminjaman(Request $request, $id) {
+        $user = Auth::user();
         $validatedData = $request->validate([
             'note_resolved' => 'required|string|max:255',
         ], [
@@ -103,13 +118,30 @@ class PeminjamanController extends Controller {
         ]);
 
         $selectedApprovalPeminjaman = ApprovalPeminjaman::find($id);
-        $selectedApprovalPeminjaman->note_resolved = $validatedData['note_resolved'];
+        $selectedHeader = HeaderTransaksi::find($selectedApprovalPeminjaman->id_header);
+        $selectedLog = LogApproval::where("id_approval", $id)->orderBy("created_at", "desc")->first();
+
+        $selectedHeader->is_resolved = 1;
+        $selectedHeader->is_rejected = null;
+        $selectedHeader->save();
+
         $selectedApprovalPeminjaman->is_resolved = 1;
         $selectedApprovalPeminjaman->save();
-        return back()->with('success', 'Perbaikan peminjaman berhasil dikirim');
+
+        LogApproval::create([
+            'id_approval' => $id,
+            'status_log' => $request->status == 1 ? 1 : 3,
+            'result' => "rejected",
+            'note' => $selectedLog->note,
+            'note_resolved' => $validatedData['note_resolved'],
+            'created_by' => $user->id,
+        ]);
+
+        return back()->with('success', $request->status == 1 ? "Perbaikan peminjaman berhasil dikirim" : "Perbaikan pengembalian berhasil dikirim");
     }
 
     public function peminjamanApprovalAdmin(Request $request, $id) {
+        $user = Auth::user();
         $validatedData = $request->validate([
             'note' => 'required|string|max:255',
             'result' => 'required|string',
@@ -129,12 +161,20 @@ class PeminjamanController extends Controller {
         if ($request->status != 1) {
             if ($validatedData['result'] == 'rejected') {
                 $selectedHeader->is_rejected = 1;
+                $selectedHeader->is_resolved = null;
                 $selectedHeader->save();
 
-                $selectedApprovalPeminjaman->note = $validatedData['note'];
                 $selectedApprovalPeminjaman->result = $validatedData['result'];
                 $selectedApprovalPeminjaman->is_resolved = null;
                 $selectedApprovalPeminjaman->save();
+
+                LogApproval::create([
+                    'id_approval' => $id,
+                    'status_log' => 1,
+                    'result' => $validatedData['result'],
+                    'note' => $validatedData['note'],
+                    'created_by' => $user->id,
+                ]);
 
                 return redirect('/peminjaman-approval')->with('success', 'Persetujuan peminjaman berhasil dikirim');
             } else if ($validatedData['result'] == 'approve') {
@@ -158,9 +198,17 @@ class PeminjamanController extends Controller {
                         $selectedAlat->save();
                     }
 
-                    $selectedApprovalPeminjaman->note = $validatedData['note'];
+                    $selectedApprovalPeminjaman->status_approval = $request->status;
                     $selectedApprovalPeminjaman->result = $validatedData['result'];
                     $selectedApprovalPeminjaman->save();
+
+                    LogApproval::create([
+                        'id_approval' => $id,
+                        'status_log' => $request->status,
+                        'result' => $validatedData['result'],
+                        'note' => $validatedData['note'],
+                        'created_by' => $user->id,
+                    ]);
 
                     $selectedHeader->status = $request->status;
                     $selectedHeader->is_rejected = null;
@@ -173,19 +221,28 @@ class PeminjamanController extends Controller {
     }
 
     public function pengembalianApproval(Request $request, $id) {
+        $user = Auth::user();
         $selectedHeader = HeaderTransaksi::find($id);
         $headerTransaksi = DB::table('header_transaksis as header')->select('header.*', 'lab.id_departemen')->join('lab', 'header.id_lab', 'lab.id_lab')->where('header.id', $id)->first();
 
         if ($request->status == 3) {
-            ApprovalPeminjaman::create([
-                'id_header' => $id,
-                'status_approval' => $request->status,
-                'result' => $request->result,
-                'id_departemen' => $headerTransaksi->id_departemen,
-            ]);
+            $selectedApprovalPeminjaman = ApprovalPeminjaman::where("id_header", $id)->first();
+
+            $selectedApprovalPeminjaman->status_approval = $request->status;
+            $selectedApprovalPeminjaman->result = $request->result;
+            $selectedApprovalPeminjaman->is_resolved = null;
+            $selectedApprovalPeminjaman->save();
 
             $selectedHeader->status = $request->status;
+            $selectedHeader->is_resolved = null;
             $selectedHeader->save();
+
+            LogApproval::create([
+                'id_approval' => $selectedApprovalPeminjaman->id,
+                'status_log' => $request->status,
+                'result' => $request->result,
+                'created_by' => $user->id,
+            ]);
         }
         return back()->with('success', 'Pengembalian peminjaman berhasil dikirim');
     }
@@ -236,6 +293,7 @@ class PeminjamanController extends Controller {
     }
 
     public function pengembalianApprovalAdmin(Request $request, $id) {
+        $user = Auth::user();
         $validatedData = $request->validate([
             'note' => 'required|string|max:255',
             'result' => 'required|string',
@@ -250,7 +308,7 @@ class PeminjamanController extends Controller {
             ->where("is_deleted", null)
             ->get();
 
-        if ($request->status == 3) {
+        if ($request->status == 4) {
             if ($validatedData['result'] == "approve") {
                 foreach ($detailPengembalianList as $detail) {
                     $selectedAlat = Alat::find($detail->id_alat);
@@ -261,25 +319,41 @@ class PeminjamanController extends Controller {
                     $selectedAlat->save();
                 }
 
-                $selectedApprovalPengembalian->note = $validatedData['note'];
+                $selectedApprovalPengembalian->status_approval = $request->status;
                 $selectedApprovalPengembalian->result = $validatedData['result'];
                 $selectedApprovalPengembalian->save();
 
-                $selectedHeader->status = $request->status + 1;
+                LogApproval::create([
+                    'id_approval' => $id,
+                    'status_log' => $request->status,
+                    'result' => $validatedData['result'],
+                    'note' => $validatedData['note'],
+                    'created_by' => $user->id,
+                ]);
+
+                $selectedHeader->status = $request->status;
                 $selectedHeader->is_rejected = null;
                 $selectedHeader->save();
 
-                return redirect('/pengembalian-approval')->with('success', 'Persetujuan pengembalian berhasil dikirim');
+                return redirect('/peminjaman-approval')->with('success', 'Persetujuan pengembalian berhasil dikirim');
             } else if ($validatedData['result'] == "rejected") {
                 $selectedHeader->is_rejected = 1;
+                $selectedHeader->is_resolved = null;
                 $selectedHeader->save();
 
-                $selectedApprovalPengembalian->note = $validatedData['note'];
                 $selectedApprovalPengembalian->result = $validatedData['result'];
                 $selectedApprovalPengembalian->is_resolved = null;
                 $selectedApprovalPengembalian->save();
 
-                return redirect('/pengembalian-approval')->with('success', 'Persetujuan pengembalian berhasil dikirim');
+                LogApproval::create([
+                    'id_approval' => $id,
+                    'status_log' => 3,
+                    'result' => $validatedData['result'],
+                    'note' => $validatedData['note'],
+                    'created_by' => $user->id,
+                ]);
+
+                return redirect('/peminjaman-approval')->with('success', 'Persetujuan pengembalian berhasil dikirim');
             }
         }
     }
@@ -287,16 +361,15 @@ class PeminjamanController extends Controller {
     public function indexHeader() {
         $user = Auth::user();
         $headerPeminjaman = DB::table('header_transaksis as header')
-            ->select('header.id', 'header.header_name', 'header.dosen', 'header.tanggal_pinjam', 'header.start_time', 'header.end_time', 'header.status', 'header.is_rejected', 'header.created_at as header_created_at', 'lab.lab', 'users.name as user_name')
+            ->select('header.id', 'header.header_name', 'header.dosen', 'header.tanggal_pinjam', 'header.start_time', 'header.end_time', 'header.status', 'header.is_rejected', 'header.is_resolved', 'header.created_at as header_created_at', 'lab.lab', 'users.name as user_name')
             ->join('lab', 'header.id_lab', '=', 'lab.id_lab')
             ->join('users', 'header.user_id', '=', 'users.id')
             ->where('header.is_deleted', null)
             ->orderBy('header.updated_at', 'desc')
             ->get();
-        $approvalHistory = DB::table('approval_peminjamen as approval')
+        $peminjamanHistory = DB::table('approval_peminjamen as approval')
             ->select('approval.*', 'users.id as user_id', 'users.name as user_name')
             ->join('users', 'approval.id_departemen', 'users.id_departemen')
-            ->where('approval.status_approval', 1)
             ->get();
 
         $pengembalianHistory = DB::table('approval_peminjamen as approval')
@@ -305,11 +378,19 @@ class PeminjamanController extends Controller {
             ->where('approval.status_approval', 3)
             ->get();
 
+        $logApproval = DB::table('log_approvals as log')
+            ->select("log.*", "users.name as user_name", "user_dept.name as user_dept_name")
+            ->join("users", "log.created_by", "users.id")
+            ->join("approval_peminjamen as approval", "log.id_approval", "approval.id")
+            ->join("users as user_dept", "approval.id_departemen", "user_dept.id_departemen")
+            ->get();
+
         return view('user.header-peminjaman', [
             'user' => $user,
             'headerPeminjaman' => $headerPeminjaman,
-            'approvalHistory' => $approvalHistory,
+            'peminjamanHistory' => $peminjamanHistory,
             'pengembalianHistory' => $pengembalianHistory,
+            'logApproval' => $logApproval,
         ]);
     }
 
@@ -348,7 +429,7 @@ class PeminjamanController extends Controller {
             'user_id' => $validatedData['user_id'],
         ]);
 
-        return redirect('/header-peminjamanUser')->with('success', 'Data header peminjaman berhasil ditambahkan.');
+        return redirect('/header-peminjamanUser')->with('success', 'Data formulir peminjaman berhasil ditambahkan.');
     }
 
     public function editHeader($id) {
@@ -388,7 +469,7 @@ class PeminjamanController extends Controller {
         $selectedHeader->user_id = $validatedData['user_id'];
         $selectedHeader->save();
 
-        return redirect('/header-peminjamanUser')->with('success', 'Data header peminjaman berhasil diperbarui.');
+        return redirect('/header-peminjamanUser')->with('success', 'Data formulir peminjaman berhasil diperbarui.');
     }
 
     public function deleteHeader($id) {
@@ -410,7 +491,7 @@ class PeminjamanController extends Controller {
         $selectedHeader->is_deleted = 1;
         $selectedHeader->save();
 
-        return redirect('/header-peminjamanUser')->with('success', 'Data header peminjaman berhasil dihapus.');
+        return redirect('/header-peminjamanUser')->with('success', 'Data formulir peminjaman berhasil dihapus.');
     }
 
     public function indexDetail($id) {
@@ -421,11 +502,19 @@ class PeminjamanController extends Controller {
 
         $rejectedPeminjaman = DB::table('approval_peminjamen as approval')->select('approval.*')->where('approval.id_header', $id)->where('approval.result', 'rejected')->where('approval.is_resolved', null)->first();
 
+        $selectedLog = null;
+        if (isset($rejectedPeminjaman)) {
+            $selectedLog = LogApproval::where("id_approval", $rejectedPeminjaman->id)
+                ->orderBy("created_at", "desc")
+                ->first();
+        }
+
         return view('user.detail-peminjaman.detail-peminjaman', [
             'user' => $user,
             'selectedHeader' => $selectedHeader,
             'detailList' => $detailList,
             'rejectedPeminjaman' => $rejectedPeminjaman,
+            'selectedLog' => $selectedLog,
         ]);
     }
 
