@@ -8,6 +8,7 @@ use App\Http\Controllers\FakultasController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\LabController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\PDFController;
 use App\Http\Controllers\PeminjamanController;
 use App\Http\Controllers\SuperadminController;
 use App\Http\Controllers\UserController;
@@ -127,7 +128,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pengembalian-approval', [PeminjamanController::class, 'indexPengembalianAdmin'])->middleware('userAkses:Admin');
     Route::get('/detail-pengembalian-approval/{id}', [PeminjamanController::class, 'indexDetailPengembalianAdmin'])->middleware('userAkses:Admin');
 
-    Route::get('/peminjaman/pdfall', [PeminjamanController::class, 'downloadPDFAll'])->name('admin.downloadPDFAll');
+    // Download PDF
+    Route::get('/peminjaman-download', [PDFController::class, 'viewPeminjamanDownload'])->middleware('userAkses:Admin')->name("peminjaman-download");
+    Route::get('/table/peminjaman-download', [PDFController::class, 'viewTablePeminjaman'])->middleware('userAkses:Admin')->name("table-peminjaman");
 
     //dosen
     Route::get('/dosen', [DosenController::class, 'index'])->middleware('userAkses:Admin');
@@ -171,7 +174,6 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/peminjaman/{id}', [PeminjamanController::class, 'destroy'])->name('peminjaman.destroy');
     Route::post('/peminjaman/kembalikan/{id}', [PeminjamanController::class, 'kembalikan'])->name('peminjaman.kembalikan');
     Route::post('/peminjaman/batal/{id}', [PeminjamanController::class, 'batalpengembalian'])->name('peminjaman.batalpengembalian');
-    Route::get('/peminjaman/{id}/pdf', [PeminjamanController::class, 'downloadPDF'])->name('peminjaman.downloadPDF');
 
     //superadmin
     Route::get('/superadmin', [SuperadminController::class, 'index'])->middleware('userAkses:Superadmin');

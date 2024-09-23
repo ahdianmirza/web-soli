@@ -449,11 +449,6 @@
         }
     </script>
     <script>
-        function downloadPDFAll() {
-            window.location.href = `/peminjaman/pdfall`;
-        }
-    </script>
-    <script>
         document.getElementById('id_lab').addEventListener('change', function() {
             var selectedLabId = this.value;
             var alatSelect = document.getElementById('id_alat');

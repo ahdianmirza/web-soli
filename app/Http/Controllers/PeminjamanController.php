@@ -6,12 +6,12 @@ use App\Models\Alat;
 use App\Models\ApprovalPeminjaman;
 use App\Models\DetailTransaksi;
 use App\Models\HeaderTransaksi;
+use App\Models\Lab;
 use App\Models\LogApproval;
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use PDF;
 
 class PeminjamanController extends Controller {
     public function index() {
@@ -26,22 +26,64 @@ class PeminjamanController extends Controller {
         return view('admin.peminjaman', compact('peminjaman', 'user'));
     }
 
-    public function indexPeminjamanAdmin() {
+    public function indexPeminjamanAdmin(Request $request) {
         $user = Auth::user();
         $idDepartemen = $user->id_departemen;
-        $peminjamanList = DB::table('approval_peminjamen as approval')
-            ->select('header.id as id_header', 'header.*', 'approval.id as approval_id', 'lab.id_departemen', 'users.name as user_name', 'lab.lab as lab_name', 'approval.created_at as approval_created_at', 'approval.status_approval', 'approval.result', 'approval.is_resolved')
-            ->join('header_transaksis as header', 'approval.id_header', 'header.id')
-            ->join('lab', 'header.id_lab', 'lab.id_lab')
-            ->join('users', 'header.user_id', 'users.id')
-            ->where('lab.id_departemen', $idDepartemen)
-            ->where('header.is_deleted', null)
-            ->orderBy('header.updated_at', 'desc')
-            ->get();
+
+        if ($request['lab'] && $request['start_date'] == null && $request['end_date'] == null) {
+            $peminjamanList = DB::table('approval_peminjamen as approval')
+                ->select('header.id as id_header', 'header.*', 'approval.id as approval_id', 'lab.id_departemen', 'users.name as user_name', 'lab.lab as lab_name', 'approval.created_at as approval_created_at', 'approval.status_approval', 'approval.result', 'approval.is_resolved')
+                ->join('header_transaksis as header', 'approval.id_header', 'header.id')
+                ->join('lab', 'header.id_lab', 'lab.id_lab')
+                ->join('users', 'header.user_id', 'users.id')
+                ->where('lab.id_departemen', $idDepartemen)
+                ->where('header.is_deleted', null)
+                ->where('lab.id_lab', $request['lab'])
+                ->orderBy('header.updated_at', 'desc')
+                ->get();
+        } else if ($request['lab'] == null && $request['start_date'] && $request['end_date']) {
+            $peminjamanList = DB::table('approval_peminjamen as approval')
+                ->select('header.id as id_header', 'header.*', 'approval.id as approval_id', 'lab.id_departemen', 'users.name as user_name', 'lab.lab as lab_name', 'approval.created_at as approval_created_at', 'approval.status_approval', 'approval.result', 'approval.is_resolved')
+                ->join('header_transaksis as header', 'approval.id_header', 'header.id')
+                ->join('lab', 'header.id_lab', 'lab.id_lab')
+                ->join('users', 'header.user_id', 'users.id')
+                ->where('lab.id_departemen', $idDepartemen)
+                ->where('header.is_deleted', null)
+                ->whereBetween('approval.created_at', [date('Y-m-d 00:00:00', strtotime($request['start_date'])), date('Y-m-d 23:59:59', strtotime($request['end_date']))])
+                ->orderBy('header.updated_at', 'desc')
+                ->get();
+        } else if ($request['lab'] && $request['start_date'] && $request['end_date']) {
+            $peminjamanList = DB::table('approval_peminjamen as approval')
+                ->select('header.id as id_header', 'header.*', 'approval.id as approval_id', 'lab.id_departemen', 'users.name as user_name', 'lab.lab as lab_name', 'approval.created_at as approval_created_at', 'approval.status_approval', 'approval.result', 'approval.is_resolved')
+                ->join('header_transaksis as header', 'approval.id_header', 'header.id')
+                ->join('lab', 'header.id_lab', 'lab.id_lab')
+                ->join('users', 'header.user_id', 'users.id')
+                ->where('lab.id_departemen', $idDepartemen)
+                ->where('header.is_deleted', null)
+                ->where('lab.id_lab', $request['lab'])
+                ->whereBetween('approval.created_at', [date('Y-m-d 00:00:00', strtotime($request['start_date'])), date('Y-m-d 23:59:59', strtotime($request['end_date']))])
+                ->orderBy('header.updated_at', 'desc')
+                ->get();
+        } else if ($request['lab'] == null && $request['start_date'] == null && $request['end_date'] == null) {
+            $peminjamanList = DB::table('approval_peminjamen as approval')
+                ->select('header.id as id_header', 'header.*', 'approval.id as approval_id', 'lab.id_departemen', 'users.name as user_name', 'lab.lab as lab_name', 'approval.created_at as approval_created_at', 'approval.status_approval', 'approval.result', 'approval.is_resolved')
+                ->join('header_transaksis as header', 'approval.id_header', 'header.id')
+                ->join('lab', 'header.id_lab', 'lab.id_lab')
+                ->join('users', 'header.user_id', 'users.id')
+                ->where('lab.id_departemen', $idDepartemen)
+                ->where('header.is_deleted', null)
+                ->orderBy('header.updated_at', 'desc')
+                ->get();
+        } else {
+            return back()->with('error', 'Filter yang anda masukkan tidak bisa digunakan');
+        }
+
+        $labList = Lab::where("id_departemen", $idDepartemen)->get();
 
         return view('admin.peminjaman', [
             'user' => $user,
             'peminjamanList' => $peminjamanList,
+            'labList' => $labList,
         ]);
     }
 
@@ -747,24 +789,5 @@ class PeminjamanController extends Controller {
         $peminjaman->save();
 
         return redirect()->back()->with('success', 'status berhasil diganti');
-    }
-
-    public function downloadPDF($id) {
-        $user = Auth::user();
-
-        $peminjaman = Transaksi::with(['lab', 'alat'])->findOrFail($id);
-
-        $pdf = PDF::loadView('user.pdf', compact('peminjaman', 'user'));
-
-        return $pdf->download('peminjaman_' . $peminjaman->id . '.pdf');
-    }
-    public function downloadPDFAll() {
-        $user = Auth::user();
-
-        $peminjaman = Transaksi::with(['lab', 'alat'])->get();
-
-        $pdf = PDF::loadView('admin.pdfall', compact('peminjaman', 'user'));
-
-        return $pdf->download('peminjaman.pdf');
     }
 }

@@ -14,13 +14,64 @@
 
         <div class="row">
             <div class="col-lg-12">
-
                 <div class="card">
                     <div class="card-body mt-3">
+                        <form action="" method="GET">
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="mb-3">
+                                        <label for="lab" class="form-label">Lab</label>
+                                        <select id="lab" class="form-select" name="lab">
+                                            <option selected value="{{ null }}">Pilih lab</option>
+
+                                            @foreach ($labList as $lab)
+                                                <option @if ($lab->id_lab == request('lab')) selected @endif
+                                                    value="{{ $lab->id_lab }}">{{ $lab->lab }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="mb-3">
+                                        <label for="start_date" class="form-label">Tanggal Awal</label>
+                                        <input type="date" class="form-control mt-1" name="start_date" id="start_date"
+                                            @if (request('start_date')) value="{{ date('Y-m-d', strtotime(request('start_date'))) }}" @endif>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="mb-3">
+                                        <label for="end_date" class="form-label">Tanggal Akhir</label>
+                                        <input type="date" class="form-control mt-1" name="end_date" id="end_date"
+                                            @if (request('end_date')) value="{{ date('Y-m-d', strtotime(request('end_date'))) }}" @endif>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-9">
+                                    <button type="submit" style="width: 100%" class="btn btn-primary">Filter</button>
+                                </div>
+                                <div class="col">
+                                    <a href="/peminjaman-approval" style="width: 100%" class="btn btn-danger">Reset
+                                        Filter</a>
+                                </div>
+                            </div>
+                        </form>
+
+                        <hr>
+
+                        <form action="{{ url('peminjaman-download') }}">
+                            <input type="hidden" name="lab"
+                                @if (request('lab')) value="{{ request('lab') }}" @endif>
+                            <input type="hidden" name="start_date"
+                                @if (request('start_date')) value="{{ request('start_date') }}" @endif>
+                            <input type="hidden" name="end_date"
+                                @if (request('end_date')) value="{{ request('end_date') }}" @endif>
+                            <button type="submit" style="margin-bottom:10px; background-color: #6610f2"
+                                class="btn btn-default text-white fw-semibold">Download PDF <i
+                                    class="bi bi-download"></i></button>
+                        </form>
                         <!-- Table with stripped rows -->
                         <table class="table datatable">
-                            <a type="button" style="margin-left: 10px; margin-bottom:10px;"
-                                class="btn  btn-outline-info btn-sm" onclick="downloadPDFAll()">Download PDF</a>
                             <thead>
                                 <tr>
                                     <th style="text-align: center;">No</th>
@@ -99,9 +150,9 @@
         </section>
     </main>
 
-    <script>
+    {{-- <script>
         function downloadPDFAll() {
             window.location.href = `/peminjaman/pdfall`;
         }
-    </script>
+    </script> --}}
 @endsection
