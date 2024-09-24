@@ -49,7 +49,7 @@ class PeminjamanController extends Controller {
                 ->join('users', 'header.user_id', 'users.id')
                 ->where('lab.id_departemen', $idDepartemen)
                 ->where('header.is_deleted', null)
-                ->whereBetween('approval.created_at', [date('Y-m-d 00:00:00', strtotime($request['start_date'])), date('Y-m-d 23:59:59', strtotime($request['end_date']))])
+                ->whereBetween('header.tanggal_pinjam', [date('Y-m-d 00:00:00', strtotime($request['start_date'])), date('Y-m-d 23:59:59', strtotime($request['end_date']))])
                 ->orderBy('header.updated_at', 'desc')
                 ->get();
         } else if ($request['lab'] && $request['start_date'] && $request['end_date']) {
@@ -61,7 +61,7 @@ class PeminjamanController extends Controller {
                 ->where('lab.id_departemen', $idDepartemen)
                 ->where('header.is_deleted', null)
                 ->where('lab.id_lab', $request['lab'])
-                ->whereBetween('approval.created_at', [date('Y-m-d 00:00:00', strtotime($request['start_date'])), date('Y-m-d 23:59:59', strtotime($request['end_date']))])
+                ->whereBetween('header.tanggal_pinjam', [date('Y-m-d 00:00:00', strtotime($request['start_date'])), date('Y-m-d 23:59:59', strtotime($request['end_date']))])
                 ->orderBy('header.updated_at', 'desc')
                 ->get();
         } else if ($request['lab'] == null && $request['start_date'] == null && $request['end_date'] == null) {

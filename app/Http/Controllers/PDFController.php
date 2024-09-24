@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Departemen;
+use App\Models\Lab;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -35,7 +37,7 @@ class PDFController extends Controller {
     public function viewPeminjamanDownload(Request $request) {
         $user = Auth::user();
         $idDepartemen = $user->id_departemen;
-        $dateNow = date('dmYHis');
+        $dateNow = date('d M Y');
 
         if ($request['lab'] && $request['start_date'] == null && $request['end_date'] == null) {
             $peminjamanList = DB::table('approval_peminjamen as approval')
@@ -58,7 +60,7 @@ class PDFController extends Controller {
                 ->join('users', 'header.user_id', 'users.id')
                 ->where('lab.id_departemen', $idDepartemen)
                 ->where('header.is_deleted', null)
-                ->whereBetween('approval.created_at', [date('Y-m-d 00:00:00', strtotime($request['start_date'])), date('Y-m-d 23:59:59', strtotime($request['end_date']))])
+                ->whereBetween('header.tanggal_pinjam', [date('Y-m-d 00:00:00', strtotime($request['start_date'])), date('Y-m-d 23:59:59', strtotime($request['end_date']))])
                 ->orderBy('header.updated_at', 'desc')
                 ->get();
             $title = "Peminjaman Filter";
@@ -72,7 +74,7 @@ class PDFController extends Controller {
                 ->where('lab.id_departemen', $idDepartemen)
                 ->where('header.is_deleted', null)
                 ->where('lab.id_lab', $request['lab'])
-                ->whereBetween('approval.created_at', [date('Y-m-d 00:00:00', strtotime($request['start_date'])), date('Y-m-d 23:59:59', strtotime($request['end_date']))])
+                ->whereBetween('header.tanggal_pinjam', [date('Y-m-d 00:00:00', strtotime($request['start_date'])), date('Y-m-d 23:59:59', strtotime($request['end_date']))])
                 ->orderBy('header.updated_at', 'desc')
                 ->get();
             $title = "Peminjaman Filter";
@@ -97,6 +99,8 @@ class PDFController extends Controller {
             ->select("detail.*", "alat.nama_alat")
             ->join("alat", "detail.id_alat", "alat.id_alat")
             ->get();
+        $labList = Lab::all();
+        $departmentList = Departemen::all();
 
         $mpdf = new \Mpdf\Mpdf();
 
@@ -105,10 +109,12 @@ class PDFController extends Controller {
             'user' => $user,
             'peminjamanList' => $peminjamanList,
             'detailList' => $detailList,
+            'labList' => $labList,
+            'departmentList' => $departmentList,
         ]);
 
         $mpdf->WriteHTML($html);
-        // $mpdf->Output();
-        $mpdf->Output($fileName, "D");
+        $mpdf->Output();
+        // $mpdf->Output($fileName, "D");
     }
 }

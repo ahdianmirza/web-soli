@@ -53,14 +53,48 @@
 <body style="background-color: white">
     <h2 style="font-size: 20px;">Rekap Data Peminjaman</h2>
 
-    <p style="
+    <div style="margin: 0 0 18px 0">
+        <p style="
       font-size: 14px;
       margin: 0
       ">Nama Admin : {{ $user->name }}</p>
-    <p style="
+        <p style="
       font-size: 14px;
-      margin: 0 0 18px 0
-      ">Waktu Cetak : {{ date('d M Y - H:i') }}</p>
+      margin: 0
+      ">Departemen :
+            {{ $departmentList->where('id_departemen', $user->id_departemen)->first()->departemen }}</p>
+
+        @if (request('lab') && request('start_date') == null && request('end_date') == null)
+            <p style="
+      font-size: 14px;
+      margin: 0
+      ">Filter Lab :
+                {{ $labList->where('id_lab', request('lab'))->first()->lab }}</p>
+        @endif
+
+        @if (request('lab') == null && request('start_date') && request('end_date'))
+            <p style="
+      font-size: 14px;
+      margin: 0
+      ">Filter Tanggal Pinjam :
+                {{ date('d M Y', strtotime(request('start_date'))) }} -
+                {{ date('d M Y', strtotime(request('end_date'))) }}</p>
+        @endif
+
+        @if (request('lab') && request('start_date') && request('end_date'))
+            <p style="
+      font-size: 14px;
+      margin: 0
+      ">Filter Lab :
+                {{ $labList->where('id_lab', request('lab'))->first()->lab }}</p>
+            <p style="
+      font-size: 14px;
+      margin: 0
+      ">Filter Tanggal Pinjam :
+                {{ date('d M Y', strtotime(request('start_date'))) }} -
+                {{ date('d M Y', strtotime(request('end_date'))) }}</p>
+        @endif
+    </div>
 
     <table class="table table-bordered table-sm">
         <thead>
@@ -80,6 +114,10 @@
                 <th style="text-align: center; font-size: 14px;">Jumlah</th>
             </tr>
         </thead>
+        @php
+            $jumlahAlatDipinjam = 0;
+            $jumlahAlatDikembalikan = 0;
+        @endphp
         <tbody>
             @foreach ($peminjamanList as $item)
                 @php
@@ -160,9 +198,43 @@
                         <td style="text-align: center; font-size: 12px;">{{ $detail->qty_borrow }}</td>
                     </tr>
                 @endforeach
+
+                @php
+                    if ($item->status_approval == 2 && $item->result == 'approve') {
+                        foreach ($detailList->where('id_header', $item->id_header) as $index => $detail) {
+                            $jumlahAlatDipinjam += $detail->qty_borrow;
+                        }
+                    }
+
+                    if ($item->status_approval == 4 && $item->result == 'approve') {
+                        foreach ($detailList->where('id_header', $item->id_header) as $index => $detail) {
+                            $jumlahAlatDikembalikan += $detail->qty_borrow;
+                        }
+                    }
+                @endphp
             @endforeach
         </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="8" style="text-align: center; font-size: 14px;">Jumlah Alat Dipinjam</th>
+                <td colspan="2" style="text-align: center; font-size: 14px;">{{ $jumlahAlatDipinjam }}</td>
+            </tr>
+            <tr>
+                <th colspan="8" style="text-align: center; font-size: 14px;">Jumlah Alat Dikembalikan</th>
+                <td colspan="2" style="text-align: center; font-size: 14px;">{{ $jumlahAlatDikembalikan }}</td>
+            </tr>
+        </tfoot>
     </table>
+
+    <div style="
+		margin: 10px 0 0 0;
+		">
+        <p style="
+				font-size: 14px;
+				text-align: right
+				">Waktu Cetak :
+            {{ date('d M Y - H:i') }}</p>
+    </div>
 </body>
 
 </html>
