@@ -19,10 +19,11 @@
 
                     <div class="card">
                         <div class="card-body">
+                            <a href="/fakultasSA/add" style="margin: 20px 0 10px 0;" class="btn btn-primary btn-sm">Tambah
+                                <i class="bi bi-plus-lg"></i></a>
+
                             <!-- Table with stripped rows -->
                             <table class="table datatable">
-                                <a href="/fakultasSA/add" style="margin: 20px 0 10px 0;"
-                                    class="btn btn-primary btn-sm">Tambah <i class="bi bi-plus-lg"></i></a>
                                 <thead>
                                     <tr>
                                         <th style="text-align: center;">No</th>

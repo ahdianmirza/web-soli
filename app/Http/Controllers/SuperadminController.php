@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Alat;
 use App\Models\Departemen;
 use App\Models\Fakultas;
 use App\Models\Lab;
@@ -272,22 +273,103 @@ class SuperadminController extends Controller {
     }
 
     public function alat() {
-        // Mendapatkan user yang sedang login
         $user = Auth::user();
-
-        // Ambil data alat yang terkait dengan id_fakultas dari user
-        $alatData = DB::table('alat as a')
-            ->join('lab as l', 'a.id_lab', '=', 'l.id_lab')
-            ->join('departemen as d', 'l.id_departemen', '=', 'd.id_departemen')
-            ->join('fakultas as f', 'd.id_fakultas', '=', 'f.id_fakultas')
+        $alatData = DB::table('alat')
+            ->select("alat.*", "lab.lab")
+            ->join('lab', 'alat.id_lab', 'lab.id_lab')
+            ->whereNot('lab.status', 0)
+            ->orderBy("alat.created_at", "desc")
             ->get();
 
-        $alatData = $alatData->map(function ($item, $index) {
-            $item->nomor = $index + 1; // Nomor urut mulai dari 1
-            return $item;
-        });
+        return view('superadmin.alat', [
+            'alatData' => $alatData,
+            'user' => $user,
+        ]);
+    }
 
-        return view('superadmin.alat', compact('alatData', 'user'));
+    public function addAlat() {
+        $user = Auth::user();
+        $labList = Lab::all();
+
+        return view('superadmin.alat.add-alat', [
+            'user' => $user,
+            'labList' => $labList,
+        ]);
+    }
+
+    public function storeAlat(Request $request) {
+        $validatedData = $request->validate([
+            'id_lab' => 'required|integer',
+            'nama_alat' => 'required|string|max:255',
+            'spesifikasi' => 'required|string|max:255',
+            'jumlah' => 'required|string',
+            'kondisi_alat' => 'required|string',
+            'status' => 'required|string',
+        ], [
+            'id_lab' => 'Lab masih kosong',
+            'nama_alat' => 'Alat masih kosong',
+            'spesifikasi' => 'Spesifikasi masih kosong',
+            'jumlah' => 'Jumlah masih kosong',
+            'kondisi_alat' => 'Jumlah masih kosong',
+            'status' => 'Pilih Aktif atau Non-Aktif',
+        ]);
+
+        Alat::create([
+            'id_lab' => $validatedData['id_lab'],
+            'nama_alat' => $validatedData['nama_alat'],
+            'spesifikasi' => $validatedData['spesifikasi'],
+            'jumlah' => $validatedData['jumlah'],
+            'kondisi_alat' => $validatedData['kondisi_alat'],
+            'status' => $validatedData['status'],
+        ]);
+        return redirect('/alatSA')->with('success', 'Alat baru berhasil ditambahkan');
+    }
+
+    public function editAlat($id) {
+        $user = Auth::user();
+        $labList = Lab::all();
+        $selectedAlat = Alat::find($id);
+
+        return view('superadmin.alat.edit-alat', [
+            'user' => $user,
+            'labList' => $labList,
+            'selectedAlat' => $selectedAlat,
+        ]);
+    }
+
+    public function updateAlat(Request $request, $id) {
+        $validatedData = $request->validate([
+            'id_lab' => 'required|integer',
+            'nama_alat' => 'required|string|max:255',
+            'spesifikasi' => 'required|string|max:255',
+            'jumlah' => 'required|string',
+            'kondisi_alat' => 'required|string',
+            'status' => 'required|string',
+        ], [
+            'id_lab' => 'Lab masih kosong',
+            'nama_alat' => 'Alat masih kosong',
+            'spesifikasi' => 'Spesifikasi masih kosong',
+            'jumlah' => 'Jumlah masih kosong',
+            'kondisi_alat' => 'Jumlah masih kosong',
+            'status' => 'Pilih Aktif atau Non-Aktif',
+        ]);
+
+        $selectedAlat = Alat::find($id);
+        $selectedAlat->id_lab = $validatedData['id_lab'];
+        $selectedAlat->nama_alat = $validatedData['nama_alat'];
+        $selectedAlat->spesifikasi = $validatedData['spesifikasi'];
+        $selectedAlat->jumlah = $validatedData['jumlah'];
+        $selectedAlat->kondisi_alat = $validatedData['kondisi_alat'];
+        $selectedAlat->status = $validatedData['status'];
+        $selectedAlat->save();
+
+        return redirect('/alatSA')->with('success', 'Data alat berhasil diperbarui');
+    }
+
+    public function destroyAlat($id) {
+        $selectedAlat = Alat::find($id);
+        $selectedAlat->delete();
+        return back()->with('success', 'Data alat berhasil dihapus');
     }
 
     public function user() {
