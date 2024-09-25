@@ -12,6 +12,7 @@
     @yield('content')
 
     @include('layout.superadmin.footer')
+    @include('sweetalert::alert')
 </body>
 
 </html>

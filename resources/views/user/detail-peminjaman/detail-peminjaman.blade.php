@@ -120,7 +120,7 @@
                                     @endforeach
                                 </tbody>
                             </table>
-                            <a href="/header-peminjamanUser" class="btn btn-danger">Kembali</a>
+                            <a href="/header-peminjamanUser" class="btn btn-danger btn-sm">Kembali</a>
                         </div>
                     </div>
                 </div>

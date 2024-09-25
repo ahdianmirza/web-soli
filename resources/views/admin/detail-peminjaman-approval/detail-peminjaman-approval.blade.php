@@ -168,7 +168,7 @@
                             {{-- Persetujuan Peminjaman --}}
 
 
-                            {{-- Peminjaman Ditolak --}}
+                            {{-- Pengembalian Ditolak --}}
                             @if (
                                 $selectedApprovalPeminjaman->status_approval == 3 &&
                                     $selectedApprovalPeminjaman->result == 'rejected' &&
@@ -181,9 +181,9 @@
                                     </div>
                                 </div>
                             @endif
-                            {{-- Peminjaman Ditolak --}}
+                            {{-- Pengembalian Ditolak --}}
 
-                            {{-- Peminjaman Resolved --}}
+                            {{-- Pengembalian Resolved --}}
                             @if (
                                 $selectedApprovalPeminjaman->status_approval == 3 &&
                                     $selectedApprovalPeminjaman->result == 'rejected' &&
@@ -236,7 +236,7 @@
                                     </div>
                                 </form>
                             @endif
-                            {{-- Peminjaman Resolved --}}
+                            {{-- Pengembalian Resolved --}}
 
                             {{-- Persetujuan Pengembalian --}}
                             @if ($selectedApprovalPeminjaman->status_approval == 3 && $selectedApprovalPeminjaman->result == 'waiting')
@@ -280,6 +280,18 @@
                                 </form>
                             @endif
                             {{-- Persetujuan Pengembalian --}}
+
+                            {{-- Peminjaman Approve --}}
+                            @if ($selectedApprovalPeminjaman->status_approval == 2 && $selectedApprovalPeminjaman->result == 'approve')
+                                <a href="/peminjaman-approval" class="btn btn-danger btn-sm">Kembali</a>
+                            @endif
+                            {{-- Peminjaman Approve --}}
+
+                            {{-- Pengembalian Approve --}}
+                            @if ($selectedApprovalPeminjaman->status_approval == 4 && $selectedApprovalPeminjaman->result == 'approve')
+                                <a href="/peminjaman-approval" class="btn btn-danger btn-sm">Kembali</a>
+                            @endif
+                            {{-- Pengembalian Approve --}}
                         </div>
                     </div>
                 </div>
