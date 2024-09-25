@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Departemen;
 use App\Models\Fakultas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -58,7 +59,7 @@ class SuperadminController extends Controller {
             'fakultas' => 'required|string|max:255',
             'status' => 'required|string',
         ], [
-            'fakultas' => 'Note masih kosong',
+            'fakultas' => 'Fakultas masih kosong',
             'status' => 'Pilih Aktif atau Non-Aktif',
         ]);
         Fakultas::create([
@@ -83,7 +84,7 @@ class SuperadminController extends Controller {
             'fakultas' => 'required|string|max:255',
             'status' => 'required|string',
         ], [
-            'fakultas' => 'Note masih kosong',
+            'fakultas' => 'Fakultas masih kosong',
             'status' => 'Pilih Aktif atau Non-Aktif',
         ]);
 
@@ -108,20 +109,83 @@ class SuperadminController extends Controller {
     }
 
     public function departemen() {
-        // Mendapatkan user yang sedang login
         $user = Auth::user();
-
-        // Mengambil departemen berdasarkan id_fakultas dari user yang login
-        $departemen = DB::table('departemen as d')
-            ->join('fakultas as f', 'd.id_fakultas', '=', 'f.id_fakultas')
+        $departemenList = DB::table("departemen")
+            ->select("departemen.*", "fakultas.fakultas")
+            ->join("fakultas", "departemen.id_fakultas", "fakultas.id_fakultas")
+            ->orderBy("departemen.created_at", "desc")
             ->get();
-        $departemen = $departemen->map(function ($item, $index) {
-            $item->nomor = $index + 1; // Nomor urut mulai dari 1
-            return $item;
-        });
-        $users = DB::table('users')->get(); // Jika kamu masih memerlukan data users
 
-        return view('superadmin.departemen', compact('departemen', 'user'));
+        return view('superadmin.departemen', [
+            'user' => $user,
+            'departemenList' => $departemenList,
+        ]);
+    }
+
+    public function addDepartemen() {
+        $user = Auth::user();
+        $fakultasList = Fakultas::whereNot("status", 0)->get();
+
+        return view('superadmin.departemen.add-departemen', [
+            'user' => $user,
+            'fakultasList' => $fakultasList,
+        ]);
+    }
+
+    public function storeDepartemen(Request $request) {
+        $validatedData = $request->validate([
+            'departemen' => 'required|string|max:255',
+            'id_fakultas' => 'required|integer',
+            'status' => 'required|string',
+        ], [
+            'departemen' => 'Departemen masih kosong',
+            'id_fakultas' => 'Fakultas masih kosong',
+            'status' => 'Pilih Aktif atau Non-Aktif',
+        ]);
+
+        Departemen::create([
+            'departemen' => $validatedData['departemen'],
+            'id_fakultas' => $validatedData['id_fakultas'],
+            'status' => $validatedData['status'],
+        ]);
+        return redirect('/departemenSA')->with('success', 'Departemen baru berhasil dibuat');
+    }
+
+    public function editDepartemen($id) {
+        $user = Auth::user();
+        $selectedDepartemen = Departemen::find($id);
+        $fakultasList = Fakultas::whereNot("status", 0)->get();
+
+        return view('superadmin.departemen.edit-departemen', [
+            'user' => $user,
+            'selectedDepartemen' => $selectedDepartemen,
+            'fakultasList' => $fakultasList,
+        ]);
+    }
+
+    public function updateDepartemen(Request $request, $id) {
+        $validatedData = $request->validate([
+            'departemen' => 'required|string|max:255',
+            'id_fakultas' => 'required|integer',
+            'status' => 'required|string',
+        ], [
+            'departemen' => 'Departemen masih kosong',
+            'id_fakultas' => 'Fakultas masih kosong',
+            'status' => 'Pilih Aktif atau Non-Aktif',
+        ]);
+
+        $selectedDepartemen = Departemen::find($id);
+        $selectedDepartemen->departemen = $validatedData['departemen'];
+        $selectedDepartemen->id_fakultas = $validatedData['id_fakultas'];
+        $selectedDepartemen->status = $validatedData['status'];
+        $selectedDepartemen->save();
+        return redirect('/departemenSA')->with('success', 'Data departemen berhasil diperbarui');
+    }
+
+    public function destroyDepartemen($id) {
+        $selectedDepartemen = Departemen::find($id);
+        $selectedDepartemen->delete();
+        return redirect('/departemenSA')->with('success', 'Data departemen berhasil dihapus');
     }
 
     public function lab() {
