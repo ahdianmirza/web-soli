@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Departemen;
 use App\Models\Fakultas;
+use App\Models\Lab;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -189,20 +190,85 @@ class SuperadminController extends Controller {
     }
 
     public function lab() {
-        // Mendapatkan user yang sedang login
         $user = Auth::user();
-
-        // Ambil data lab yang terkait dengan id_fakultas dari user
-        $labData = DB::table('lab as l')
-            ->join('departemen as d', 'l.id_departemen', '=', 'd.id_departemen')
-            ->join('fakultas as f', 'd.id_fakultas', '=', 'f.id_fakultas')
+        $labData = DB::table('lab')
+            ->select("lab.*", "departemen.departemen")
+            ->join('departemen', 'lab.id_departemen', 'departemen.id_departemen')
+            ->whereNot("departemen.status", 0)
+            ->orderBy("lab.created_at", "desc")
             ->get();
-        $labData = $labData->map(function ($item, $index) {
-            $item->nomor = $index + 1; // Nomor urut mulai dari 1
-            return $item;
-        });
 
-        return view('superadmin.lab', compact('labData', 'user'));
+        return view('superadmin.lab', [
+            'user' => $user,
+            'labData' => $labData,
+        ]);
+    }
+
+    public function addLab() {
+        $user = Auth::user();
+        $departemenList = Departemen::whereNot("status", 0)->get();
+
+        return view('superadmin.lab.add-lab', [
+            'user' => $user,
+            'departemenList' => $departemenList,
+        ]);
+    }
+
+    public function storeLab(Request $request) {
+        $validatedData = $request->validate([
+            'lab' => 'required|string|max:255',
+            'id_departemen' => 'required|integer',
+            'status' => 'required|string',
+        ], [
+            'lab' => 'Lab masih kosong',
+            'id_departemen' => 'Departemen masih kosong',
+            'status' => 'Pilih Aktif atau Non-Aktif',
+        ]);
+
+        Lab::create([
+            'lab' => $validatedData['lab'],
+            'id_departemen' => $validatedData['id_departemen'],
+            'status' => $validatedData['status'],
+        ]);
+        return redirect('/labSA')->with('success', 'Lab baru berhasil dibuat');
+    }
+
+    public function editLab($id) {
+        $user = Auth::user();
+        $departemenList = Departemen::whereNot("status", 0)->get();
+        $selectedLab = Lab::find($id);
+
+        return view('superadmin.lab.edit-lab', [
+            'user' => $user,
+            'departemenList' => $departemenList,
+            'selectedLab' => $selectedLab,
+        ]);
+    }
+
+    public function updateLab(Request $request, $id) {
+        $validatedData = $request->validate([
+            'lab' => 'required|string|max:255',
+            'id_departemen' => 'required|integer',
+            'status' => 'required|string',
+        ], [
+            'lab' => 'Lab masih kosong',
+            'id_departemen' => 'Departemen masih kosong',
+            'status' => 'Pilih Aktif atau Non-Aktif',
+        ]);
+
+        $selectedLab = Lab::find($id);
+        $selectedLab->lab = $validatedData['lab'];
+        $selectedLab->id_departemen = $validatedData['id_departemen'];
+        $selectedLab->status = $validatedData['status'];
+        $selectedLab->save();
+
+        return redirect('/labSA')->with('success', 'Data lab berhasil diperbarui');
+    }
+
+    public function destroyLab($id) {
+        $selectedLab = Lab::find($id);
+        $selectedLab->delete();
+        return redirect('/labSA')->with('success', 'Data lab berhasil dihapus');
     }
 
     public function alat() {

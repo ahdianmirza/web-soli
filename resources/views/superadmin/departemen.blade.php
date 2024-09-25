@@ -25,7 +25,7 @@
                             <table class="table datatable">
                                 <thead>
                                     <tr>
-                                        <th style="text-align: center;">ID</th>
+                                        <th style="text-align: center;">No</th>
                                         <th style="text-align: center;">Nama Departemen</th>
                                         <th style="text-align: center;">Nama Fakultas</th>
                                         <th style="text-align: center;">Status</th>

@@ -25,7 +25,7 @@
                                     class="btn btn-primary btn-sm">Tambah <i class="bi bi-plus-lg"></i></a>
                                 <thead>
                                     <tr>
-                                        <th style="text-align: center;">ID</th>
+                                        <th style="text-align: center;">No</th>
                                         <th style="text-align: center;">Nama Fakultas</th>
                                         <th style="text-align: center;">Status</th>
                                         <th style="text-align: center;">Action</th>

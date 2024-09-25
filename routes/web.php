@@ -194,6 +194,12 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/departemenSA/delete/{id}', [SuperadminController::class, 'destroyDepartemen'])->middleware('userAkses:Superadmin');
 
     Route::get('/labSA', [SuperadminController::class, 'lab'])->middleware('userAkses:Superadmin');
+    Route::get('/labSA/add', [SuperadminController::class, 'addLab'])->middleware('userAkses:Superadmin');
+    Route::post('/labSA/store', [SuperadminController::class, 'storeLab'])->middleware('userAkses:Superadmin');
+    Route::get('/labSA/edit/{id}', [SuperadminController::class, 'editLab'])->middleware('userAkses:Superadmin');
+    Route::put('/labSA/update/{id}', [SuperadminController::class, 'updateLab'])->middleware('userAkses:Superadmin');
+    Route::delete('/labSA/delete/{id}', [SuperadminController::class, 'destroyLab'])->middleware('userAkses:Superadmin');
+
     Route::get('/alatSA', [SuperadminController::class, 'alat'])->middleware('userAkses:Superadmin');
     Route::get('/userSA', [SuperadminController::class, 'user'])->middleware('userAkses:Superadmin');
     Route::get('/peminjamanSA', [SuperadminController::class, 'peminjaman'])->middleware('userAkses:Superadmin');
