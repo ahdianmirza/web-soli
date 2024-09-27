@@ -6,6 +6,7 @@ use App\Models\Alat;
 use App\Models\Departemen;
 use App\Models\Fakultas;
 use App\Models\Lab;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -374,13 +375,102 @@ class SuperadminController extends Controller {
 
     public function user() {
         $user = Auth::user();
-        $users = DB::table('users')->get();
-        $users = $users->map(function ($item, $index) {
-            $item->nomor = $index + 1;
-            return $item;
-        });
+        $users = DB::table('users')
+            ->select("*")
+            ->orderBy("created_at", "desc")
+            ->get();
 
-        return view('superadmin.user', compact('user', 'users'));
+        return view('superadmin.user', [
+            'user' => $user,
+            'users' => $users,
+        ]);
+    }
+
+    public function addUser() {
+        $user = Auth::user();
+        $departemenList = Departemen::whereNot("status", 0)->get();
+
+        return view('superadmin.user.add-user', [
+            'user' => $user,
+            'departemenList' => $departemenList,
+        ]);
+    }
+
+    public function storeUser(Request $request) {
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email:rfc,dns|max:255',
+            'password' => 'required|string|max:255',
+            'id_departemen' => 'required|integer',
+            'id_role' => 'required|string',
+            'status' => 'required|string',
+        ], [
+            'name' => 'Nama user masih kosong',
+            'email.required' => 'Email masih kosong',
+            'email.email' => 'Format email salah',
+            'password' => 'Password masih kosing',
+            'id_departemen' => 'Departemen masih kosong',
+            'id_role' => 'Role masih kosong',
+            'status' => 'Pilih Aktif atau Non-Aktif',
+        ]);
+
+        User::create([
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+            'id_departemen' => $validatedData['id_departemen'],
+            'id_role' => $validatedData['id_role'],
+            'password' => bcrypt($validatedData['password']),
+            'id_status' => $validatedData['status'],
+        ]);
+        return redirect('/userSA')->with('success', 'User baru berhasil dibuat');
+    }
+
+    public function editUser($id) {
+        $user = Auth::user();
+        $departemenList = Departemen::whereNot("status", 0)->get();
+        $selectedUser = User::find($id);
+
+        return view('superadmin.user.edit-user', [
+            'user' => $user,
+            'departemenList' => $departemenList,
+            'selectedUser' => $selectedUser,
+        ]);
+    }
+
+    public function updateUser(Request $request, $id) {
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email:rfc,dns|max:255',
+            'password' => 'required|string|max:255',
+            'id_departemen' => 'required|integer',
+            'id_role' => 'required|string',
+            'status' => 'required|string',
+        ], [
+            'name' => 'Nama user masih kosong',
+            'email.required' => 'Email masih kosong',
+            'email.email' => 'Format email salah',
+            'password' => 'Password masih kosing',
+            'id_departemen' => 'Departemen masih kosong',
+            'id_role' => 'Role masih kosong',
+            'status' => 'Pilih Aktif atau Non-Aktif',
+        ]);
+
+        $selectedUser = User::find($id);
+        $selectedUser->name = $validatedData['name'];
+        $selectedUser->email = $validatedData['email'];
+        $selectedUser->password = bcrypt($validatedData['password']);
+        $selectedUser->id_departemen = $validatedData['id_departemen'];
+        $selectedUser->id_role = $validatedData['id_role'];
+        $selectedUser->id_status = $validatedData['status'];
+        $selectedUser->save();
+
+        return redirect('/userSA')->with('success', 'Data user berhasil diperbarui');
+    }
+
+    public function destroyUser($id) {
+        $selectedUser = User::find($id);
+        $selectedUser->delete();
+        return back()->with('success', 'Data user berhasil dihapus');
     }
 
     public function peminjaman() {
