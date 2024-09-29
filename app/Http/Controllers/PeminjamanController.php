@@ -407,6 +407,7 @@ class PeminjamanController extends Controller {
             ->join('lab', 'header.id_lab', '=', 'lab.id_lab')
             ->join('users', 'header.user_id', '=', 'users.id')
             ->where('header.is_deleted', null)
+            ->where('header.user_id', $user->id)
             ->orderBy('header.updated_at', 'desc')
             ->get();
         $peminjamanHistory = DB::table('approval_peminjamen as approval')

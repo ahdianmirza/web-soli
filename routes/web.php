@@ -90,6 +90,10 @@ Route::get('/home', function () {
 Route::middleware(['auth'])->group(function () {
     //Admin
     Route::get('/admin', [AdminController::class, 'index'])->middleware('userAkses:Admin');
+    Route::get('/admin/profile', [AdminController::class, 'indexProfileAdmin'])->middleware('userAkses:Admin');
+    Route::put('/admin/profile/update/{id}', [AdminController::class, 'updateProfileAdmin'])->middleware('userAkses:Admin');
+    Route::put('/admin/profile/update-pass/{id}', [AdminController::class, 'updateProfilePassAdmin'])->middleware('userAkses:Admin');
+
     //fakultas
     Route::get('/fakultas', [FakultasController::class, 'index'])->middleware('userAkses:Admin');
     //departemen
