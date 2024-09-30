@@ -17,8 +17,8 @@
                 </a>
                 <ul id="components-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
                     <li>
-                        <a href="/fakultasSA">
-                            <i class="bi bi-circle"></i><span>Fakultas</span>
+                        <a href="/alatSA">
+                            <i class="bi bi-circle"></i><span>Alat</span>
                         </a>
                     </li>
                     <li>
@@ -27,13 +27,18 @@
                         </a>
                     </li>
                     <li>
-                        <a href="/labSA">
-                            <i class="bi bi-circle"></i><span>Lab</span>
+                        <a href="/dosenSA">
+                            <i class="bi bi-circle"></i><span>Dosen</span>
                         </a>
                     </li>
                     <li>
-                        <a href="/alatSA">
-                            <i class="bi bi-circle"></i><span>Alat</span>
+                        <a href="/fakultasSA">
+                            <i class="bi bi-circle"></i><span>Fakultas</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/labSA">
+                            <i class="bi bi-circle"></i><span>Lab</span>
                         </a>
                     </li>
                 </ul>

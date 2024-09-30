@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Alat;
 use App\Models\Departemen;
+use App\Models\Dosen;
 use App\Models\Fakultas;
 use App\Models\Lab;
 use App\Models\User;
@@ -489,6 +490,80 @@ class SuperadminController extends Controller {
             return $item;
         });
         return view('superadmin.peminjaman', compact('peminjaman', 'user'));
+    }
+
+    public function dosenSuperAdmin() {
+        $user = Auth::user();
+        $dosenList = DB::table('dosens')
+            ->select('dosens.*', 'departemen.departemen')
+            ->join('departemen', 'dosens.id_departemen', 'departemen.id_departemen')
+            ->orderBy('dosens.created_at', 'desc')
+            ->get();
+
+        return view('superadmin.dosen.dosen', [
+            'user' => $user,
+            'dosenList' => $dosenList,
+        ]);
+    }
+
+    public function addDosenSuperAdmin() {
+        $user = Auth::user();
+        $departemenList = Departemen::whereNot("status", 0)->get();
+
+        return view('superadmin.dosen.add-dosen', [
+            'user' => $user,
+            'departemenList' => $departemenList,
+        ]);
+    }
+
+    public function storeDosenSuperAdmin(Request $request) {
+        $validatedData = $request->validate([
+            'nama_dosen' => 'required|string|max:255',
+            'id_departemen' => 'required|integer',
+        ], [
+            'nama_dosen' => 'Nama dosen masih kosong',
+            'id_departemen' => 'Departemen masih kosong',
+        ]);
+        Dosen::create([
+            'nama_dosen' => $validatedData['nama_dosen'],
+            'id_departemen' => $validatedData['id_departemen'],
+        ]);
+        return redirect('/dosenSA')->with('success', 'Dosen baru berhasil dibuat');
+    }
+
+    public function editDosenSuperAdmin($id) {
+        $user = Auth::user();
+        $selectedDosen = Dosen::find($id);
+        $departemenList = Departemen::whereNot("status", 0)->get();
+
+        return view('superadmin.dosen.edit-dosen', [
+            'user' => $user,
+            'selectedDosen' => $selectedDosen,
+            'departemenList' => $departemenList,
+        ]);
+    }
+
+    public function updateDosenSuperAdmin(Request $request, $id) {
+        $validatedData = $request->validate([
+            'nama_dosen' => 'required|string|max:255',
+            'id_departemen' => 'required|integer',
+        ], [
+            'nama_dosen' => 'Nama dosen masih kosong',
+            'id_departemen' => 'Departemen masih kosong',
+        ]);
+
+        $selectedDosen = Dosen::find($id);
+        $selectedDosen->nama_dosen = $validatedData['nama_dosen'];
+        $selectedDosen->id_departemen = $validatedData['id_departemen'];
+        $selectedDosen->save();
+
+        return redirect('/dosenSA')->with('success', 'Data dosen berhasil diperbarui');
+    }
+
+    public function destroyDosenSuperAdmin($id) {
+        $selectedDosen = Dosen::find($id);
+        $selectedDosen->delete();
+        return back()->with('success', 'Data dosen berhasil dihapus');
     }
 
     public function indexProfileSuperAdmin() {

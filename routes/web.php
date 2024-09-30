@@ -229,6 +229,13 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/userSA/update/{id}', [SuperadminController::class, 'updateUser'])->middleware('userAkses:Superadmin');
     Route::delete('/userSA/delete/{id}', [SuperadminController::class, 'destroyUser'])->middleware('userAkses:Superadmin');
 
+    Route::get('/dosenSA', [SuperadminController::class, 'dosenSuperAdmin'])->middleware('userAkses:Superadmin');
+    Route::get('/dosenSA/add', [SuperadminController::class, 'addDosenSuperAdmin'])->middleware('userAkses:Superadmin');
+    Route::post('/dosenSA/store', [SuperadminController::class, 'storeDosenSuperAdmin'])->middleware('userAkses:Superadmin');
+    Route::get('/dosenSA/edit/{id}', [SuperadminController::class, 'editDosenSuperAdmin'])->middleware('userAkses:Superadmin');
+    Route::put('/dosenSA/update/{id}', [SuperadminController::class, 'updateDosenSuperAdmin'])->middleware('userAkses:Superadmin');
+    Route::delete('/dosenSA/delete/{id}', [SuperadminController::class, 'destroyDosenSuperAdmin'])->middleware('userAkses:Superadmin');
+
     Route::get('/peminjamanSA', [SuperadminController::class, 'peminjaman'])->middleware('userAkses:Superadmin');
 
     Route::get('/logout', [LoginController::class, 'logout']);
