@@ -16,7 +16,7 @@
                     <div style="height: 40px; width: 40px;"
                         class="d-flex rounded-circle justify-content-center align-items-center">
                         <img style="width: 100%; height: 100%; object-position: top"
-                            src="@if ($user->photo == null) {{ URL::to('/') }}/assets/img/profile-img.jpg @else {{ asset("storage/photo-user/$user->photo") }} @endif"
+                            src="@if ($user->photo == null) {{ URL::to('/') }}/assets/img/profile-img.jpg @else {{ asset("storage/photo-admin/$user->photo") }} @endif"
                             alt="Profile" class="rounded-circle object-fit-cover">
                     </div>
                     <span class="d-none d-md-block dropdown-toggle ps-2">{{ $user->name }}</span>

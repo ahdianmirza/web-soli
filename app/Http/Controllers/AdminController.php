@@ -86,7 +86,7 @@ class AdminController extends Controller {
         if ($request->file('photo')) {
             $photo = $request->file('photo');
             $fileName = date("d-m-Y") . $photo->getClientOriginalName();
-            $filePath = 'photo-user/' . $fileName;
+            $filePath = 'photo-admin/' . $fileName;
             Storage::disk("public")->put($filePath, file_get_contents($photo));
         }
 

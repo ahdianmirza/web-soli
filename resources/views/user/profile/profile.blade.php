@@ -1,12 +1,12 @@
-@extends('layout.admin')
+@extends('layout.user')
 @section('content')
     <main id="main" class="main">
         <div class="pagetitle">
-            <h1>Profile Admin</h1>
+            <h1>Profile {{ $user->id_role }}</h1>
             <nav>
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/admin">Home</a></li>
-                    <li class="breadcrumb-item active">Profile Admin</li>
+                    <li class="breadcrumb-item"><a href="/user">Home</a></li>
+                    <li class="breadcrumb-item active">Profile {{ $user->id_role }}</li>
                 </ol>
             </nav>
         </div><!-- End Page Title -->
@@ -21,11 +21,10 @@
                             <div style="height: 140px; width: 140px;"
                                 class="d-flex rounded-circle justify-content-center align-items-center">
                                 <img style="width: 100%; height: 100%; object-position: top"
-                                    src="@if ($user->photo == null) {{ URL::to('/') }}/assets/img/profile-img.jpg @else {{ asset("storage/photo-admin/$user->photo") }} @endif"
+                                    src="@if ($user->photo == null) {{ URL::to('/') }}/assets/img/profile-img.jpg @else {{ asset("storage/photo-user/$user->photo") }} @endif"
                                     alt="Profile" class="rounded-circle object-fit-cover">
                             </div>
                             <h2 class="text-center">{{ $user->name }}</h2>
-                            <h3 class="text-center">{{ $selectedDepartemen->departemen }}</h3>
                         </div>
                     </div>
 
@@ -66,17 +65,12 @@
                                         <div class="col-lg-3 col-md-4 label">Email</div>
                                         <div class="col-lg-9 col-md-8">{{ $user->email }}</div>
                                     </div>
-
-                                    <div class="row">
-                                        <div class="col-lg-3 col-md-4 label">Departemen</div>
-                                        <div class="col-lg-9 col-md-8">{{ $selectedDepartemen->departemen }}</div>
-                                    </div>
                                 </div>
 
                                 <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
                                     <!-- Profile Edit Form -->
-                                    <form action="/admin/profile/update/{{ $user->id }}" method="post"
-                                        enctype="multipart/form-data" id="updateProfileForm-{{ $user->id }}">
+                                    <form action="/user/profile/update/{{ $user->id }}" method="post"
+                                        enctype="multipart/form-data" id="updateProfileUserForm-{{ $user->id }}">
                                         @csrf
                                         @method('put')
 
@@ -84,7 +78,7 @@
                                             <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile
                                                 Image</label>
                                             <div class="col-md-8 col-lg-9">
-                                                <img src="@if ($user->photo == null) {{ URL::to('/') }}/assets/img/profile-img.jpg @else {{ asset("storage/photo-admin/$user->photo") }} @endif"
+                                                <img src="@if ($user->photo == null) {{ URL::to('/') }}/assets/img/profile-img.jpg @else {{ asset("storage/photo-user/$user->photo") }} @endif"
                                                     alt="Profile">
                                                 <div class="pt-2">
                                                     <div class="row">
@@ -113,22 +107,6 @@
                                             </div>
                                         </div>
 
-                                        <div class="row mb-3">
-                                            <label class="col-md-4 col-lg-3 col-form-label"
-                                                for="id_departemen">Departemen</label>
-                                            <div class="col-md-8 col-lg-9">
-                                                <select class="form-control" id="id_departemen" name="id_departemen">
-                                                    <option selected disabled>Pilih Departemen</option>
-                                                    @foreach ($departemenList as $departemen)
-                                                        <option @if ($departemen->id_departemen == $user->id_departemen) selected @endif
-                                                            value="{{ $departemen->id_departemen }}">
-                                                            {{ $departemen->departemen }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-
                                         <div class="text-center">
                                             <button onclick="handleUpdateProfile(event, {{ $user->id }})"
                                                 type="submit" class="btn btn-primary">Save Changes</button>
@@ -138,7 +116,7 @@
 
                                 <div class="tab-pane fade pt-3" id="profile-change-password">
                                     <!-- Change Password Form -->
-                                    <form action="/admin/profile/update-pass/{{ $user->id }}" method="post"
+                                    <form action="/user/profile/update-pass/{{ $user->id }}" method="post"
                                         id="updatePasswordAdminForm-{{ $user->id }}">
                                         @csrf
                                         @method('put')
@@ -171,8 +149,7 @@
                                         </div>
 
                                         <div class="text-center">
-                                            <button onclick="handleUpdatePasswordAdmin(event, {{ $user->id }})"
-                                                type="submit" class="btn btn-primary">Change Password</button>
+                                            <button type="submit" class="btn btn-primary">Change Password</button>
                                         </div>
                                     </form>
                                 </div>
@@ -182,6 +159,6 @@
                 </div>
             </div>
         </section>
-        @include('admin.profile.profile_js')
+        @include('user.profile.profile_js')
     </main>
 @endsection

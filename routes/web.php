@@ -141,6 +141,9 @@ Route::middleware(['auth'])->group(function () {
 
     //User
     Route::get('/user', [UserController::class, 'index'])->middleware('userAkses:User');
+    Route::get('/user/profile', [UserController::class, 'indexProfileUser'])->middleware('userAkses:User');
+    Route::put('/user/profile/update/{id}', [UserController::class, 'updateProfileUser'])->middleware('userAkses:User');
+    Route::put('/user/profile/update-pass/{id}', [UserController::class, 'updateProfilePassUser'])->middleware('userAkses:User');
 
     //peminjaman user
     // Header peminjaman User
