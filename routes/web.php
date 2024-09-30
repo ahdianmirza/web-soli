@@ -184,6 +184,9 @@ Route::middleware(['auth'])->group(function () {
 
     //superadmin
     Route::get('/superadmin', [SuperadminController::class, 'index'])->middleware('userAkses:Superadmin');
+    Route::get('/superadmin/profile', [SuperadminController::class, 'indexProfileSuperAdmin'])->middleware('userAkses:Superadmin');
+    Route::put('/superadmin/profile/update/{id}', [SuperadminController::class, 'updateProfileAdmin'])->middleware('userAkses:Superadmin');
+    Route::put('/superadmin/profile/update-pass/{id}', [SuperadminController::class, 'updateProfilePassAdmin'])->middleware('userAkses:Superadmin');
 
     // Superadmin Fakultas
     Route::get('/fakultasSA', [SuperadminController::class, 'fakultas'])->middleware('userAkses:Superadmin');

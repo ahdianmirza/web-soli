@@ -44,10 +44,11 @@
                             <hr class="dropdown-divider">
                         </li>
                         <li>
-                            <a class="dropdown-item d-flex align-items-center" href="/logout">
+                            <button onclick="handleLogoutUser(event)" type="button"
+                                class="dropdown-item d-flex align-items-center">
                                 <i class="bi bi-box-arrow-right"></i>
                                 <span>Logout</span>
-                            </a>
+                            </button>
                         </li>
 
                     </ul><!-- End Profile Dropdown Items -->
@@ -57,3 +58,25 @@
         </nav><!-- End Icons Navigation -->
 
     </header><!-- End Header -->
+
+    <script src="{{ asset('assets/js/jquery-3.7.1.js') }}"></script>
+    <script src="{{ asset('assets/js/sweetalert2@11.js') }}"></script>
+    <script>
+        // Handle Logout User
+        const handleLogoutUser = (e) => {
+            e.preventDefault();
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, save it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "/logout";
+                }
+            });
+        }
+    </script>
