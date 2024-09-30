@@ -27,6 +27,11 @@
                         </a>
                     </li> -->
                     <li>
+                        <a href="/dosen">
+                            <i class="bi bi-circle"></i><span>Dosen</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="/lab">
                             <i class="bi bi-circle"></i><span>Lab</span>
                         </a>
@@ -43,12 +48,6 @@
                 <a class="nav-link collapsed" href="/peminjaman-approval">
                     <i class="bi bi-card-list"></i>
                     <span>Peminjaman</span>
-                </a>
-            </li><!-- End Profile Page Nav -->
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="dosen">
-                    <i class="bi bi-person"></i>
-                    <span>Dosen</span>
                 </a>
             </li><!-- End Profile Page Nav -->
             <li class="nav-item">

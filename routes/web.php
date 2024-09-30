@@ -138,6 +138,11 @@ Route::middleware(['auth'])->group(function () {
 
     //dosen
     Route::get('/dosen', [DosenController::class, 'index'])->middleware('userAkses:Admin');
+    Route::get('/dosen/add', [DosenController::class, 'addDosen'])->middleware('userAkses:Admin');
+    Route::post('/dosen/store', [DosenController::class, 'storeDosen'])->middleware('userAkses:Admin');
+    Route::get('/dosen/edit/{id}', [DosenController::class, 'editDosen'])->middleware('userAkses:Admin');
+    Route::put('/dosen/update/{id}', [DosenController::class, 'updateDosen'])->middleware('userAkses:Admin');
+    Route::delete('/dosen/delete/{id}', [DosenController::class, 'destroyDosen'])->middleware('userAkses:Admin');
 
     //User
     Route::get('/user', [UserController::class, 'index'])->middleware('userAkses:User');

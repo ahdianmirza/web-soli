@@ -440,7 +440,7 @@ class PeminjamanController extends Controller {
     public function addHeader() {
         $user = Auth::user();
         $labList = DB::table('lab')->select('id_lab', 'lab', 'id_departemen')->where('status', 1)->get();
-        $dosenList = DB::table('dosen')->get();
+        $dosenList = DB::table('dosens')->get();
 
         return view('user.add-header-peminjaman', [
             'user' => $user,
@@ -479,7 +479,7 @@ class PeminjamanController extends Controller {
         $user = Auth::user();
         $selectedHeader = HeaderTransaksi::find($id);
         $labList = DB::table('lab')->select('id_lab', 'lab', 'id_departemen')->where('status', 1)->get();
-        $dosenList = DB::table('dosen')->get();
+        $dosenList = DB::table('dosens')->get();
 
         return view('user.edit-header-peminjaman', [
             'user' => $user,
