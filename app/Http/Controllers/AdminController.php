@@ -58,11 +58,12 @@ class AdminController extends Controller {
         $peminjamanTolak = $peminjamanList->where("status_approval", "!=", null)->where("result", "rejected")->count();
 
         $belumKembali = DB::table("detail_transaksis as detail")
-            ->select("detail.*", "lab.lab", "alat.nama_alat", "header.header_name", "header.tanggal_pinjam")
+            ->select("detail.*", "lab.lab", "alat.nama_alat", "header.header_name", "header.tanggal_pinjam", "users.name as user_name")
             ->join("alat", "detail.id_alat", "alat.id_alat")
             ->join("header_transaksis as header", "detail.id_header", "header.id")
             ->join("approval_peminjamen as approval", "header.id", "approval.id_header")
             ->join("lab", "header.id_lab", "lab.id_lab")
+            ->join("users", "header.user_id", "users.id")
             ->where('approval.status_approval', '>=', 2)
             ->where('approval.status_approval', '!=', 4)
             ->get();

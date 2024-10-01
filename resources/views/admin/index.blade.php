@@ -66,6 +66,7 @@
                                     <tr>
                                         <th style="text-align: center; font-size: 16px;">No</th>
                                         <th style="text-align: center; font-size: 16px;">Nama Form</th>
+                                        <th style="text-align: center; font-size: 16px;">Nama Peminjam</th>
                                         <th style="text-align: center; font-size: 16px;">Nama Lab</th>
                                         <th style="text-align: center; font-size: 16px;">Tanggal Pinjam</th>
                                         <th style="text-align: center; font-size: 16px;">Alat</th>
@@ -77,6 +78,7 @@
                                         <tr>
                                             <td style="text-align: center; font-size: 16px;">{{ $loop->iteration }}</td>
                                             <td style="text-align: center; font-size: 16px;">{{ $item->header_name }}</td>
+                                            <td style="text-align: center; font-size: 16px;">{{ $item->user_name }}</td>
                                             <td style="text-align: center; font-size: 16px;">{{ $item->lab }}</td>
                                             <td style="text-align: center; font-size: 16px;">
                                                 {{ date('d-m-Y', strtotime($item->tanggal_pinjam)) }}
