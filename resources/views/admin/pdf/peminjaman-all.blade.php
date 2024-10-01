@@ -200,7 +200,7 @@
                 @endforeach
 
                 @php
-                    if ($item->status_approval == 2 && $item->result == 'approve') {
+                    if (($item->status_approval == 2 && $item->result == 'approve') || $item->status_approval == 3) {
                         foreach ($detailList->where('id_header', $item->id_header) as $index => $detail) {
                             $jumlahAlatDipinjam += $detail->qty_borrow;
                         }

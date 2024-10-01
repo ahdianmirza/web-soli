@@ -114,7 +114,7 @@ class PDFController extends Controller {
         ]);
 
         $mpdf->WriteHTML($html);
-        $mpdf->Output();
-        // $mpdf->Output($fileName, "D");
+        // $mpdf->Output();
+        $mpdf->Output($fileName, "D");
     }
 }
