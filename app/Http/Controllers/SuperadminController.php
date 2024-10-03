@@ -18,29 +18,29 @@ class SuperadminController extends Controller {
     public function index() {
         $user = Auth::user();
         $fakultas = DB::table('fakultas')
-            ->get();
-        $departemen = DB::table('departemen as d')
-            ->join('fakultas as f', 'd.id_fakultas', '=', 'f.id_fakultas')
-            ->get();
-        $labData = DB::table('lab as l')
-            ->join('departemen as d', 'l.id_departemen', '=', 'd.id_departemen')
-            ->join('fakultas as f', 'd.id_fakultas', '=', 'f.id_fakultas')
-            ->get();
-        $alatData = DB::table('alat as a')
-            ->join('lab as l', 'a.id_lab', '=', 'l.id_lab')
-            ->join('departemen as d', 'l.id_departemen', '=', 'd.id_departemen')
-            ->join('fakultas as f', 'd.id_fakultas', '=', 'f.id_fakultas')
-            ->get();
-        $users = DB::table('users')->get();
+            ->select("id_fakultas")
+            ->count();
+        $departemen = DB::table('departemen')
+            ->select("id_departemen")
+            ->count();
+        $labData = DB::table('lab')
+            ->select("id_lab")
+            ->count();
+        $alatData = DB::table('alat')
+            ->select("id_alat")
+            ->count();
+        $users = DB::table('users')
+            ->select("id")
+            ->count();
 
-        $jumlahFakultas = $fakultas->count();
-        $jumlahDepartemen = $departemen->count();
-        $jumlahLab = $labData->count();
-        $jumlahAlat = $alatData->count();
-        $jumlahUser = $users->count();
-
-        return view('superadmin.index', compact('user', 'fakultas', 'departemen', 'labData', 'alatData', 'users',
-            'jumlahFakultas', 'jumlahDepartemen', 'jumlahLab', 'jumlahAlat', 'jumlahUser'));
+        return view('superadmin.index', [
+            'user' => $user,
+            'fakultas' => $fakultas,
+            'departemen' => $departemen,
+            'labData' => $labData,
+            'alatData' => $alatData,
+            'users' => $users,
+        ]);
     }
 
     public function fakultas() {
