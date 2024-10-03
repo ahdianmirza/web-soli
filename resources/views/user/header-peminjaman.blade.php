@@ -88,12 +88,14 @@
                                             </td>
                                             <td>
                                                 <div class="d-flex gap-2 flex-wrap justify-content-center">
-                                                    <a href="/detail-peminjamanUser/{{ $header->id }}"
+                                                    <a data-bs-toggle="tooltip" data-bs-title="Detail"
+                                                        href="/detail-peminjamanUser/{{ $header->id }}"
                                                         class="btn btn-primary btn-sm"><i
                                                             class="bi bi-eye-fill"></i></i></a>
 
                                                     @if ($header->status === null)
-                                                        <a href="/header-peminjamanUser/{{ $header->id }}/edit"
+                                                        <a data-bs-toggle="tooltip" data-bs-title="Edit"
+                                                            href="/header-peminjamanUser/{{ $header->id }}/edit"
                                                             class="btn btn-warning btn-sm"><i
                                                                 class="bi bi-pencil-square"></i></a>
                                                     @endif
@@ -103,7 +105,7 @@
                                                             method="post" id="deleteHeaderForm-{{ $header->id }}">
                                                             @csrf
                                                             @method('put')
-                                                            <button
+                                                            <button data-bs-toggle="tooltip" data-bs-title="Hapus"
                                                                 onclick="handleDeleteHeader(event, {{ $header->id }})"
                                                                 type="submit" class="btn btn-danger btn-sm"><i
                                                                     class="bi bi-trash-fill"></i></i></button>
@@ -118,7 +120,8 @@
 
                                                             <input type="hidden" name="result" value="waiting">
                                                             <input type="hidden" name="status" value="1">
-                                                            <button
+                                                            <button data-bs-toggle="tooltip"
+                                                                data-bs-title="Kirim Persetujuan"
                                                                 onclick="handleApprovalHeader(event, {{ $header->id }})"
                                                                 type="submit" class="btn btn-default btn-sm"
                                                                 style="background-color: #6610f2"><i
@@ -129,7 +132,7 @@
                                                     {{-- Show History --}}
                                                     @if ($header->status !== null)
                                                         <button class="btn btn-default btn-sm text-white"
-                                                            data-bs-toggle="modal"
+                                                            title="History Persetujuan" data-bs-toggle="modal"
                                                             data-bs-target="#historyModal-{{ $header->id }}"
                                                             style="background-color: #d63384"><i
                                                                 class="bi bi-clock-history"></i></button>
@@ -143,12 +146,20 @@
 
                                                             <input type="hidden" name="result" value="waiting">
                                                             <input type="hidden" name="status" value="3">
-                                                            <button
+                                                            <button data-bs-toggle="tooltip" data-bs-title="Kembalikan"
                                                                 onclick="handlePengembalianHeader(event, {{ $header->id }})"
                                                                 type="submit" class="btn btn-default btn-sm text-white"
                                                                 style="background-color: #20c997"><i
                                                                     class="bi bi-check-lg"></i></button>
                                                         </form>
+                                                    @endif
+
+                                                    @if ($header->status == 2 || $header->status == 3 || $header->status == 4)
+                                                        <a href="/peminjaman-user-download/{{ $header->id }}"
+                                                            data-bs-toggle="tooltip" data-bs-title="Download Data"
+                                                            type="submit" class="btn btn-default btn-sm text-white"
+                                                            style="background-color: #6610f2"><i
+                                                                class="bi bi-download"></i></a>
                                                     @endif
 
                                                     <!-- Modal -->
@@ -294,4 +305,10 @@
         </section>
         @include('user.header-peminjaman_js')
     </main>
+
+    <script>
+        $(function() {
+            $('[data-bs-toggle="tooltip"]').tooltip();
+        });
+    </script>
 @endsection

@@ -3,13 +3,13 @@
 
         <ul class="sidebar-nav" id="sidebar-nav">
 
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a class="nav-link collapsed" href="/user">
                     <i class="bi bi-grid"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
-            <li class="nav-heading">Menu</li>
+            <li class="nav-heading">Menu</li> --}}
 
             <li class="nav-item">
                 <a class="nav-link collapsed" href="/header-peminjamanUser">
@@ -19,7 +19,8 @@
             </li><!-- End Profile Page Nav -->
 
             <li class="nav-item">
-                <button style="width: 100%" onclick="handleLogoutUser(event)" type="button" class="nav-link collapsed">
+                <button style="width: 100%" onclick="handleLogoutUserSide(event)" type="button"
+                    class="nav-link collapsed">
                     <i class="bi bi-box-arrow-in-left"></i>
                     <span>Logout</span>
                 </button>
@@ -32,7 +33,7 @@
     <script src="{{ asset('assets/js/sweetalert2@11.js') }}"></script>
     <script>
         // Handle Logout User
-        const handleLogoutUser = (e) => {
+        const handleLogoutUserSide = (e) => {
             e.preventDefault();
             Swal.fire({
                 title: "Are you sure?",
@@ -41,7 +42,7 @@
                 showCancelButton: true,
                 confirmButtonColor: "#3085d6",
                 cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, save it!"
+                confirmButtonText: "Yes, logout!"
             }).then((result) => {
                 if (result.isConfirmed) {
                     window.location.href = "/logout";

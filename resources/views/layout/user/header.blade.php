@@ -44,7 +44,7 @@
                             <hr class="dropdown-divider">
                         </li>
                         <li>
-                            <button onclick="handleLogoutUser(event)" type="button"
+                            <button onclick="handleLogoutUserHeader(event)" type="button"
                                 class="dropdown-item d-flex align-items-center">
                                 <i class="bi bi-box-arrow-right"></i>
                                 <span>Logout</span>
@@ -63,7 +63,7 @@
     <script src="{{ asset('assets/js/sweetalert2@11.js') }}"></script>
     <script>
         // Handle Logout User
-        const handleLogoutUser = (e) => {
+        const handleLogoutUserHeader = (e) => {
             e.preventDefault();
             Swal.fire({
                 title: "Are you sure?",
@@ -72,7 +72,7 @@
                 showCancelButton: true,
                 confirmButtonColor: "#3085d6",
                 cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, save it!"
+                confirmButtonText: "Yes, logout!"
             }).then((result) => {
                 if (result.isConfirmed) {
                     window.location.href = "/logout";

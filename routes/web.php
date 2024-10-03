@@ -134,7 +134,9 @@ Route::middleware(['auth'])->group(function () {
 
     // Download PDF
     Route::get('/peminjaman-download', [PDFController::class, 'viewPeminjamanDownload'])->middleware('userAkses:Admin')->name("peminjaman-download");
+    Route::get('/peminjaman-user-download/{id}', [PDFController::class, 'viewPeminjamanUserDownload'])->middleware('userAkses:User')->name("peminjaman-user-download");
     Route::get('/table/peminjaman-download', [PDFController::class, 'viewTablePeminjaman'])->middleware('userAkses:Admin')->name("table-peminjaman");
+    Route::get('/table/peminjaman-user-download/{id}', [PDFController::class, 'viewTablePeminjamanUser'])->middleware('userAkses:User')->name("table-peminjaman-user");
 
     //dosen
     Route::get('/dosen', [DosenController::class, 'index'])->middleware('userAkses:Admin');
