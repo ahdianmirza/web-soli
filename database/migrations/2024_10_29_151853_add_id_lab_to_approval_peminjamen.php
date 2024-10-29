@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void {
         Schema::table('approval_peminjamen', function (Blueprint $table) {
-            $table->integer('id_lab')->nullable()->after('id_departemen');
+            // $table->integer('id_lab')->nullable()->after('id_departemen');
         });
     }
 
@@ -19,7 +19,7 @@ return new class extends Migration {
      */
     public function down(): void {
         Schema::table('approval_peminjamen', function (Blueprint $table) {
-            //
+            $table->dropColumn('id_departemen');
         });
     }
 };
