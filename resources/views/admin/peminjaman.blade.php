@@ -136,10 +136,4 @@
         </div>
         </section>
     </main>
-
-    {{-- <script>
-        function downloadPDFAll() {
-            window.location.href = `/peminjaman/pdfall`;
-        }
-    </script> --}}
 @endsection

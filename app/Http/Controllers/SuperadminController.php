@@ -400,27 +400,44 @@ class SuperadminController extends Controller {
     }
 
     public function storeUser(Request $request) {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email:rfc,dns|max:255',
-            'password' => 'required|string|max:255',
-            'id_lab' => 'required|integer',
-            'id_role' => 'required|string',
-            'status' => 'required|string',
-        ], [
-            'name' => 'Nama user masih kosong',
-            'email.required' => 'Email masih kosong',
-            'email.email' => 'Format email salah',
-            'password' => 'Password masih kosing',
-            'id_lab' => 'Lab masih kosong',
-            'id_role' => 'Role masih kosong',
-            'status' => 'Pilih Aktif atau Non-Aktif',
-        ]);
+        if ($request->id_role == "Admin") {
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email:rfc,dns|max:255',
+                'password' => 'required|string|max:255',
+                'id_lab' => 'required|integer',
+                'id_role' => 'required|string',
+                'status' => 'required|string',
+            ], [
+                'name' => 'Nama user masih kosong',
+                'email.required' => 'Email masih kosong',
+                'email.email' => 'Format email salah',
+                'password' => 'Password masih kosong',
+                'id_lab' => 'Lab masih kosong',
+                'id_role' => 'Role masih kosong',
+                'status' => 'Pilih Aktif atau Non-Aktif',
+            ]);
+        } else {
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email:rfc,dns|max:255',
+                'password' => 'required|string|max:255',
+                'id_role' => 'required|string',
+                'status' => 'required|string',
+            ], [
+                'name' => 'Nama user masih kosong',
+                'email.required' => 'Email masih kosong',
+                'email.email' => 'Format email salah',
+                'password' => 'Password masih kosong',
+                'id_role' => 'Role masih kosong',
+                'status' => 'Pilih Aktif atau Non-Aktif',
+            ]);
+        }
 
         User::create([
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
-            'id_lab' => $validatedData['id_lab'],
+            'id_lab' => $validatedData['id_role'] == "Admin" ? $validatedData['id_lab'] : null,
             'id_role' => $validatedData['id_role'],
             'password' => bcrypt($validatedData['password']),
             'id_status' => $validatedData['status'],
@@ -441,28 +458,45 @@ class SuperadminController extends Controller {
     }
 
     public function updateUser(Request $request, $id) {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email:rfc,dns|max:255',
-            'password' => 'required|string|max:255',
-            'id_lab' => 'required|integer',
-            'id_role' => 'required|string',
-            'status' => 'required|string',
-        ], [
-            'name' => 'Nama user masih kosong',
-            'email.required' => 'Email masih kosong',
-            'email.email' => 'Format email salah',
-            'password' => 'Password masih kosing',
-            'id_lab' => 'Lab masih kosong',
-            'id_role' => 'Role masih kosong',
-            'status' => 'Pilih Aktif atau Non-Aktif',
-        ]);
+        if ($request->id_role == "Admin") {
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email:rfc,dns|max:255',
+                'password' => 'required|string|max:255',
+                'id_lab' => 'required|integer',
+                'id_role' => 'required|string',
+                'status' => 'required|string',
+            ], [
+                'name' => 'Nama user masih kosong',
+                'email.required' => 'Email masih kosong',
+                'email.email' => 'Format email salah',
+                'password' => 'Password masih kosong',
+                'id_lab' => 'Lab masih kosong',
+                'id_role' => 'Role masih kosong',
+                'status' => 'Pilih Aktif atau Non-Aktif',
+            ]);
+        } else {
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email:rfc,dns|max:255',
+                'password' => 'required|string|max:255',
+                'id_role' => 'required|string',
+                'status' => 'required|string',
+            ], [
+                'name' => 'Nama user masih kosong',
+                'email.required' => 'Email masih kosong',
+                'email.email' => 'Format email salah',
+                'password' => 'Password masih kosong',
+                'id_role' => 'Role masih kosong',
+                'status' => 'Pilih Aktif atau Non-Aktif',
+            ]);
+        }
 
         $selectedUser = User::find($id);
         $selectedUser->name = $validatedData['name'];
         $selectedUser->email = $validatedData['email'];
         $selectedUser->password = bcrypt($validatedData['password']);
-        $selectedUser->id_lab = $validatedData['id_lab'];
+        $selectedUser->id_lab = $validatedData['id_role'] == "Admin" ? $validatedData['id_lab'] : null;
         $selectedUser->id_role = $validatedData['id_role'];
         $selectedUser->id_status = $validatedData['status'];
         $selectedUser->save();

@@ -7,7 +7,6 @@ use App\Models\ApprovalPeminjaman;
 use App\Models\DetailTransaksi;
 use App\Models\HeaderTransaksi;
 use App\Models\LogApproval;
-use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -93,7 +92,7 @@ class PeminjamanController extends Controller {
     public function peminjamanApproval(Request $request, $id) {
         $user = Auth::user();
         $selectedHeader = HeaderTransaksi::find($id);
-        $headerTransaksi = DB::table('header_transaksis as header')->select('header.*', 'lab.id_departemen')->join('lab', 'header.id_lab', 'lab.id_lab')->where('header.id', $id)->first();
+        $headerTransaksi = DB::table('header_transaksis')->select('*')->first();
 
         $selectedDetailCount = DetailTransaksi::where('id_header', $id)->where('is_deleted', null)->get()->count();
 
@@ -104,7 +103,7 @@ class PeminjamanController extends Controller {
         if ($request->status == 1) {
             ApprovalPeminjaman::create([
                 'id_header' => $id,
-                'id_departemen' => $headerTransaksi->id_departemen,
+                'id_lab' => $headerTransaksi->id_lab,
                 'status_approval' => $request->status,
                 'result' => $request->result,
                 'created_by' => $user->id,
@@ -385,12 +384,12 @@ class PeminjamanController extends Controller {
             ->get();
         $peminjamanHistory = DB::table('approval_peminjamen as approval')
             ->select('approval.*', 'users.id as user_id', 'users.name as user_name')
-            ->join('users', 'approval.id_departemen', 'users.id_departemen')
+            ->join('users', 'approval.id_lab', 'users.id_lab')
             ->get();
 
         $pengembalianHistory = DB::table('approval_peminjamen as approval')
             ->select('approval.*', 'users.id as user_id', 'users.name as user_name')
-            ->join('users', 'approval.id_departemen', 'users.id_departemen')
+            ->join('users', 'approval.id_lab', 'users.id_lab')
             ->where('approval.status_approval', 3)
             ->get();
 
@@ -398,7 +397,7 @@ class PeminjamanController extends Controller {
             ->select("log.*", "users.name as user_name", "user_dept.name as user_dept_name")
             ->join("users", "log.created_by", "users.id")
             ->join("approval_peminjamen as approval", "log.id_approval", "approval.id")
-            ->join("users as user_dept", "approval.id_departemen", "user_dept.id_departemen")
+            ->join("users as user_dept", "approval.id_lab", "user_dept.id_lab")
             ->get();
 
         return view('user.header-peminjaman', [
@@ -651,117 +650,5 @@ class PeminjamanController extends Controller {
         $alats = DB::table('alat')->get(); // Ambil data alat
 
         return view('user.peminjaman', compact('peminjaman', 'user', 'labs', 'alats'));
-    }
-    public function store(Request $request) {
-        dd($request->all());
-        try {
-            $validatedData = $request->validate([
-                'id_lab' => 'required|exists:lab,id_lab',
-                'dosen' => 'required|string',
-                'id_alat' => 'required|integer',
-                'jumlah_pinjam' => 'required|integer',
-                'tanggal_pinjam' => 'required|date',
-                'waktu' => 'required|integer|between:1,8',
-                'email' => 'nullable|email',
-            ]);
-
-            // Pengecekan apakah sudah ada peminjaman dengan id_lab dan waktu yang sama
-            $existingPeminjaman = Transaksi::where('id_lab', $request->id_lab)
-                ->where('tanggal_pinjam', $request->tanggal_pinjam)
-                ->where('waktu', $request->waktu)
-                ->exists();
-
-            if ($existingPeminjaman) {
-                return redirect()->back()->withErrors('Maaf, sudah ada peminjaman di lab ini pada waktu yang dipilih.');
-            }
-
-            // Pengecekan jumlah alat yang tersedia
-            $alat = Alat::find($request->id_alat);
-
-            if (!$alat || $request->jumlah_pinjam > $alat->jumlah) {
-                return redirect()->back()->withErrors('Jumlah alat tidak mencukupi untuk peminjaman.');
-            }
-
-            // Simpan data peminjaman baru
-            $peminjaman = new Transaksi();
-            $peminjaman->user_id = Auth::id();
-            $peminjaman->id_lab = $request->id_lab;
-            $peminjaman->dosen = $request->dosen;
-            $peminjaman->id_alat = $request->id_alat;
-            $peminjaman->jumlah_pinjam = $request->jumlah_pinjam;
-            $peminjaman->kondisi = 'Baik';
-            $peminjaman->tanggal_pinjam = $request->tanggal_pinjam;
-            $peminjaman->waktu = $request->waktu;
-            $peminjaman->email = $request->email;
-            $peminjaman->approve = 1;
-            $peminjaman->save();
-
-            // Kurangi jumlah alat di tabel alat
-            $alat->jumlah -= $request->jumlah_pinjam;
-            $alat->save();
-
-            return redirect()->route('user.peminjaman.index')->with('success', 'Peminjaman berhasil ditambahkan.');
-        } catch (\Exception $e) {
-            return redirect()->back()->withErrors('Gagal menyimpan data.');
-        }
-    }
-
-    public function edit($id) {
-        $peminjaman = Transaksi::find($id);
-        if ($peminjaman) {
-            return response()->json(['success' => true, 'peminjaman' => $peminjaman]);
-        }
-        return response()->json(['success' => false, 'message' => 'Data not found']);
-    }
-
-    public function update(Request $request, $id) {
-        $validatedData = $request->validate([
-            'id_lab' => 'required|exists:lab,id_lab',
-            'id_alat' => 'exists:alat,id_alat',
-            'dosen' => 'required|string',
-            'jumlah_pinjam' => 'required|integer',
-            'tanggal_pinjam' => 'required|date',
-            'waktu' => 'required|integer|between:1,8',
-        ]);
-
-        $peminjaman = Transaksi::findOrFail($id);
-        $peminjaman->id_lab = $request->id_lab;
-        $peminjaman->id_alat = $request->id_alat;
-        $peminjaman->dosen = $request->dosen;
-        $peminjaman->jumlah_pinjam = $request->jumlah_pinjam;
-        $peminjaman->tanggal_pinjam = $request->tanggal_pinjam;
-        $peminjaman->waktu = $request->waktu;
-        $peminjaman->save();
-
-        return redirect('peminjamanUser')->with('success', 'Peminjaman berhasil diupdate.');
-    }
-
-    public function destroy($id) {
-        $peminjaman = Transaksi::findOrFail($id);
-        $peminjaman->delete();
-        return redirect()->route('user.peminjaman.index')->with('success', 'Peminjaman berhasil dihapus.');
-    }
-
-    public function kembalikan($id) {
-        $peminjaman = Transaksi::find($id);
-
-        if (!$peminjaman) {
-            return redirect()->back()->with('error', 'Peminjaman tidak ditemukan.');
-        }
-        $peminjaman->approve = 3;
-        $peminjaman->save();
-
-        return redirect()->back()->with('success', 'Peminjaman telah selesai, menunggu pengecekan petugas.');
-    }
-    public function batalpengembalian($id) {
-        $peminjaman = Transaksi::find($id);
-
-        if (!$peminjaman) {
-            return redirect()->back()->with('error', 'Peminjaman tidak ditemukan.');
-        }
-        $peminjaman->approve = 2;
-        $peminjaman->save();
-
-        return redirect()->back()->with('success', 'status berhasil diganti');
     }
 }

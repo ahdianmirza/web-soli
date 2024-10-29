@@ -37,6 +37,16 @@
                                         placeholder="Masukkan password" required>
                                 </div>
                                 <div class="form-group mb-3">
+                                    <label for="id_role">Role</label>
+                                    <select onchange="onChangeUser(event)" class="form-control mt-1" id="id_role"
+                                        name="id_role">
+                                        <option selected disabled>Pilih Role</option>
+                                        <option value="Superadmin">Superadmin</option>
+                                        <option value="Admin">Admin</option>
+                                        <option value="User">User</option>
+                                    </select>
+                                </div>
+                                <div class="form-group mb-3">
                                     <label for="id_lab">Lab</label>
                                     <select class="form-control mt-1" id="id_lab" name="id_lab">
                                         <option selected disabled>Pilih Lab</option>
@@ -44,15 +54,6 @@
                                             <option value="{{ $lab->id_lab }}">{{ $lab->lab }}
                                             </option>
                                         @endforeach
-                                    </select>
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="id_role">Role</label>
-                                    <select class="form-control mt-1" id="id_role" name="id_role">
-                                        <option selected disabled>Pilih Role</option>
-                                        <option value="Superadmin">Superadmin</option>
-                                        <option value="Admin">Admin</option>
-                                        <option value="User">User</option>
                                     </select>
                                 </div>
                                 <div class="d-flex gap-3 mt-2">
@@ -82,6 +83,19 @@
                 </div>
             </div>
         </section>
+
+        <script>
+            const onChangeUser = (e) => {
+                console.info("lab value: ", e.target.value);
+                const idLabInput = document.getElementById("id_lab");
+                let userRole = e.target.value;
+                if (userRole == "User" || userRole == "Superadmin") {
+                    idLabInput.disabled = true;
+                } else {
+                    idLabInput.disabled = false;
+                }
+            }
+        </script>
 
     </main>
 @endsection

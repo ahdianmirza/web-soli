@@ -9,8 +9,8 @@ return new class extends Migration {
      * Run the migrations.
      */
     public function up(): void {
-        Schema::table('users', function (Blueprint $table) {
-            // $table->integer('id_lab')->nullable()->after('id_departemen');
+        Schema::table('approval_peminjamen', function (Blueprint $table) {
+            $table->integer('id_lab')->nullable()->after('id_departemen');
         });
     }
 
@@ -18,8 +18,8 @@ return new class extends Migration {
      * Reverse the migrations.
      */
     public function down(): void {
-        Schema::table('users', function (Blueprint $table) {
-            // $table->dropColumn('id_departemen');
+        Schema::table('approval_peminjamen', function (Blueprint $table) {
+            //
         });
     }
 };

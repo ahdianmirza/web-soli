@@ -39,7 +39,8 @@
                                 </div>
                                 <div class="form-group mb-3">
                                     <label for="id_lab">Lab</label>
-                                    <select class="form-control mt-1" id="id_lab" name="id_lab">
+                                    <select @if ($selectedUser->id_role != 'Admin') disabled @endif class="form-control mt-1"
+                                        id="id_lab" name="id_lab">
                                         <option selected disabled>Pilih Lab</option>
                                         @foreach ($labList as $lab)
                                             <option @if ($lab->id_lab == $selectedUser->id_lab) selected @endif
