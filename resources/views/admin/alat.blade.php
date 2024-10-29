@@ -24,10 +24,11 @@
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-body mt-3">
+                            <a href="/alat/add" style="margin-left: 10px; margin-bottom:10px;"
+                                class="btn btn-primary btn-sm">Tambah <i class="bi bi-plus-lg"></i></a>
+
                             <!-- Table with stripped rows -->
                             <table class="table datatable">
-                                <a href="/alat/add" style="margin-left: 10px; margin-bottom:10px;"
-                                    class="btn btn-primary btn-sm">Tambah Alat</a>
                                 <thead>
                                     <tr>
                                         <th style="text-align: center;">No</th>
@@ -56,17 +57,20 @@
                                                     <span class="badge bg-danger">Non-Aktif</span>
                                                 @endif
                                             </td>
-                                            <td class="d-flex align-items-start gap-2">
-                                                <a href="/alat/{{ $item->id_alat }}/edit"
-                                                    class="btn btn-outline-warning btn-sm">Edit</a>
+                                            <td style="text-align: center;"
+                                                class="d-flex align-items-start justify-content-center gap-2">
+                                                <a data-bs-toggle="tooltip" data-bs-title="Edit"
+                                                    href="/alat/{{ $item->id_alat }}/edit" class="btn btn-warning btn-sm"><i
+                                                        class="bi bi-pencil-square"></i></a>
 
                                                 <form action="/alat/{{ $item->id_alat }}/delete" method="post"
                                                     id="deleteAlatForm-{{ $item->id_alat }}">
                                                     @method('put')
                                                     @csrf
-                                                    <button onclick="handleDeleteAlat(event, {{ $item->id_alat }})"
-                                                        class="btn btn-outline-danger btn-sm" type="submit">
-                                                        Hapus
+                                                    <button data-bs-toggle="tooltip" data-bs-title="Hapus"
+                                                        onclick="handleDeleteAlat(event, {{ $item->id_alat }})"
+                                                        class="btn btn-danger btn-sm" type="submit">
+                                                        <i class="bi bi-trash-fill"></i>
                                                     </button>
                                                 </form>
                                             </td>
@@ -82,4 +86,11 @@
 
         @include('admin.alat.alat_js')
     </main>
-    @endsections
+
+    <script src="{{ asset('assets/js/jquery-3.7.1.js') }}"></script>
+    <script>
+        $(function() {
+            $('[data-bs-toggle="tooltip"]').tooltip();
+        });
+    </script>
+@endsection

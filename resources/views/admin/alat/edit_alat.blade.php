@@ -22,18 +22,6 @@
                                 @csrf
 
                                 <div class="form-group mb-3">
-                                    <label for="labName">Nama Laboratorium</label>
-                                    <select class="form-control" id="labName" name="lab">
-                                        @foreach ($labList as $lab)
-                                            <option value="{{ $lab->id_lab }}"
-                                                @if ($lab->id_lab === $selectedAlat[0]->id_lab) selected @endif>
-                                                {{ $lab->lab }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="form-group mb-3">
                                     <label for="alatName">Nama Alat</label>
                                     <input type="text" class="form-control" id="alatName" name="nama_alat"
                                         value="{{ $selectedAlat[0]->nama_alat }}">

@@ -26,7 +26,7 @@
                             <i class="bi bi-circle"></i><span>Departemen</span>
                         </a>
                     </li> -->
-                    <li>
+                    {{-- <li>
                         <a href="/dosen">
                             <i class="bi bi-circle"></i><span>Dosen</span>
                         </a>
@@ -35,7 +35,7 @@
                         <a href="/lab">
                             <i class="bi bi-circle"></i><span>Lab</span>
                         </a>
-                    </li>
+                    </li> --}}
                     <li>
                         <a href="/alat">
                             <i class="bi bi-circle"></i><span>Alat</span>

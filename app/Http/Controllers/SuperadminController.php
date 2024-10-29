@@ -61,6 +61,7 @@ class SuperadminController extends Controller {
     }
 
     public function storeFakultas(Request $request) {
+        dd($request->all());
         $validatedData = $request->validate([
             'fakultas' => 'required|string|max:255',
             'status' => 'required|string',
@@ -391,11 +392,10 @@ class SuperadminController extends Controller {
 
     public function addUser() {
         $user = Auth::user();
-        $departemenList = Departemen::whereNot("status", 0)->get();
-
+        $labList = Lab::whereNot("status", 0)->get();
         return view('superadmin.user.add-user', [
             'user' => $user,
-            'departemenList' => $departemenList,
+            'labList' => $labList,
         ]);
     }
 
@@ -404,7 +404,7 @@ class SuperadminController extends Controller {
             'name' => 'required|string|max:255',
             'email' => 'required|string|email:rfc,dns|max:255',
             'password' => 'required|string|max:255',
-            'id_departemen' => 'required|integer',
+            'id_lab' => 'required|integer',
             'id_role' => 'required|string',
             'status' => 'required|string',
         ], [
@@ -412,7 +412,7 @@ class SuperadminController extends Controller {
             'email.required' => 'Email masih kosong',
             'email.email' => 'Format email salah',
             'password' => 'Password masih kosing',
-            'id_departemen' => 'Departemen masih kosong',
+            'id_lab' => 'Lab masih kosong',
             'id_role' => 'Role masih kosong',
             'status' => 'Pilih Aktif atau Non-Aktif',
         ]);
@@ -420,7 +420,7 @@ class SuperadminController extends Controller {
         User::create([
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
-            'id_departemen' => $validatedData['id_departemen'],
+            'id_lab' => $validatedData['id_lab'],
             'id_role' => $validatedData['id_role'],
             'password' => bcrypt($validatedData['password']),
             'id_status' => $validatedData['status'],
@@ -430,12 +430,12 @@ class SuperadminController extends Controller {
 
     public function editUser($id) {
         $user = Auth::user();
-        $departemenList = Departemen::whereNot("status", 0)->get();
+        $labList = Lab::whereNot("status", 0)->get();
         $selectedUser = User::find($id);
 
         return view('superadmin.user.edit-user', [
             'user' => $user,
-            'departemenList' => $departemenList,
+            'labList' => $labList,
             'selectedUser' => $selectedUser,
         ]);
     }
@@ -445,7 +445,7 @@ class SuperadminController extends Controller {
             'name' => 'required|string|max:255',
             'email' => 'required|string|email:rfc,dns|max:255',
             'password' => 'required|string|max:255',
-            'id_departemen' => 'required|integer',
+            'id_lab' => 'required|integer',
             'id_role' => 'required|string',
             'status' => 'required|string',
         ], [
@@ -453,7 +453,7 @@ class SuperadminController extends Controller {
             'email.required' => 'Email masih kosong',
             'email.email' => 'Format email salah',
             'password' => 'Password masih kosing',
-            'id_departemen' => 'Departemen masih kosong',
+            'id_lab' => 'Lab masih kosong',
             'id_role' => 'Role masih kosong',
             'status' => 'Pilih Aktif atau Non-Aktif',
         ]);
@@ -462,7 +462,7 @@ class SuperadminController extends Controller {
         $selectedUser->name = $validatedData['name'];
         $selectedUser->email = $validatedData['email'];
         $selectedUser->password = bcrypt($validatedData['password']);
-        $selectedUser->id_departemen = $validatedData['id_departemen'];
+        $selectedUser->id_lab = $validatedData['id_lab'];
         $selectedUser->id_role = $validatedData['id_role'];
         $selectedUser->id_status = $validatedData['status'];
         $selectedUser->save();

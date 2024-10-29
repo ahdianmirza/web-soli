@@ -25,7 +25,7 @@
                                     alt="Profile" class="rounded-circle object-fit-cover">
                             </div>
                             <h2 class="text-center">{{ $user->name }}</h2>
-                            <h3 class="text-center">{{ $selectedDepartemen->departemen }}</h3>
+                            <h3 class="text-center">{{ $selectedLab->lab }}</h3>
                         </div>
                     </div>
 
@@ -68,8 +68,8 @@
                                     </div>
 
                                     <div class="row">
-                                        <div class="col-lg-3 col-md-4 label">Departemen</div>
-                                        <div class="col-lg-9 col-md-8">{{ $selectedDepartemen->departemen }}</div>
+                                        <div class="col-lg-3 col-md-4 label">Lab</div>
+                                        <div class="col-lg-9 col-md-8">{{ $selectedLab->lab }}</div>
                                     </div>
                                 </div>
 
@@ -114,15 +114,14 @@
                                         </div>
 
                                         <div class="row mb-3">
-                                            <label class="col-md-4 col-lg-3 col-form-label"
-                                                for="id_departemen">Departemen</label>
+                                            <label class="col-md-4 col-lg-3 col-form-label" for="id_lab">Lab</label>
                                             <div class="col-md-8 col-lg-9">
-                                                <select class="form-control" id="id_departemen" name="id_departemen">
-                                                    <option selected disabled>Pilih Departemen</option>
-                                                    @foreach ($departemenList as $departemen)
-                                                        <option @if ($departemen->id_departemen == $user->id_departemen) selected @endif
-                                                            value="{{ $departemen->id_departemen }}">
-                                                            {{ $departemen->departemen }}
+                                                <select class="form-control" id="id_lab" name="id_lab">
+                                                    <option selected disabled>Pilih Lab</option>
+                                                    @foreach ($labList as $lab)
+                                                        <option @if ($lab->id_lab == $user->id_lab) selected @endif
+                                                            value="{{ $lab->id_lab }}">
+                                                            {{ $lab->lab }}
                                                         </option>
                                                     @endforeach
                                                 </select>

@@ -56,40 +56,18 @@
     <div style="margin: 0 0 18px 0">
         <p style="
       font-size: 14px;
-      margin: 0
+      margin: 4px 0
       ">Nama Admin : {{ $user->name }}</p>
         <p style="
       font-size: 14px;
-      margin: 0
-      ">Departemen :
-            {{ $departmentList->where('id_departemen', $user->id_departemen)->first()->departemen }}</p>
+      margin: 4px 0
+      ">Lab :
+            {{ $selectedLab->lab }}</p>
 
-        @if (request('lab') && request('start_date') == null && request('end_date') == null)
+        @if (request('start_date') && request('end_date'))
             <p style="
       font-size: 14px;
-      margin: 0
-      ">Filter Lab :
-                {{ $labList->where('id_lab', request('lab'))->first()->lab }}</p>
-        @endif
-
-        @if (request('lab') == null && request('start_date') && request('end_date'))
-            <p style="
-      font-size: 14px;
-      margin: 0
-      ">Filter Tanggal Pinjam :
-                {{ date('d M Y', strtotime(request('start_date'))) }} -
-                {{ date('d M Y', strtotime(request('end_date'))) }}</p>
-        @endif
-
-        @if (request('lab') && request('start_date') && request('end_date'))
-            <p style="
-      font-size: 14px;
-      margin: 0
-      ">Filter Lab :
-                {{ $labList->where('id_lab', request('lab'))->first()->lab }}</p>
-            <p style="
-      font-size: 14px;
-      margin: 0
+      margin: 4px 0
       ">Filter Tanggal Pinjam :
                 {{ date('d M Y', strtotime(request('start_date'))) }} -
                 {{ date('d M Y', strtotime(request('end_date'))) }}</p>
@@ -102,7 +80,6 @@
                 <th rowspan="2" style="text-align: center; font-size: 14px;">No</th>
                 <th rowspan="2" style="text-align: center; font-size: 14px;">Nama Peminjam</th>
                 <th rowspan="2" style="text-align: center; font-size: 14px;">Nama Form</th>
-                <th rowspan="2" style="text-align: center; font-size: 14px;">Nama Lab</th>
                 <th rowspan="2" style="text-align: center; font-size: 14px;">Nama Dosen Pembimbing</th>
                 <th rowspan="2" style="text-align: center; font-size: 14px;">Tanggal Pinjam</th>
                 <th rowspan="2" style="text-align: center; font-size: 14px;">Waktu Pinjam</th>
@@ -130,8 +107,6 @@
                         {{ $item->user_name }}</td>
                     <td rowspan="{{ $detailCount + 1 }}" style="text-align: center; font-size: 12px;">
                         {{ $item->header_name }}</td>
-                    <td rowspan="{{ $detailCount + 1 }}" style="text-align: center; font-size: 12px;">
-                        {{ $item->lab_name }}</td>
                     <td rowspan="{{ $detailCount + 1 }}" style="text-align: center; font-size: 12px;">
                         {{ $item->dosen }}</td>
                     <td rowspan="{{ $detailCount + 1 }}" style="text-align: center; font-size: 12px;">

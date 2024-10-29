@@ -18,27 +18,14 @@
                     <div class="card-body mt-3">
                         <form action="" method="GET">
                             <div class="row">
-                                <div class="col-4">
-                                    <div class="mb-3">
-                                        <label for="lab" class="form-label">Lab</label>
-                                        <select id="lab" class="form-select" name="lab">
-                                            <option selected value="{{ null }}">Pilih lab</option>
-
-                                            @foreach ($labList as $lab)
-                                                <option @if ($lab->id_lab == request('lab')) selected @endif
-                                                    value="{{ $lab->id_lab }}">{{ $lab->lab }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-4">
+                                <div class="col-6">
                                     <div class="mb-3">
                                         <label for="start_date" class="form-label">Tanggal Pinjam Awal</label>
                                         <input type="date" class="form-control mt-1" name="start_date" id="start_date"
                                             @if (request('start_date')) value="{{ date('Y-m-d', strtotime(request('start_date'))) }}" @endif>
                                     </div>
                                 </div>
-                                <div class="col-4">
+                                <div class="col-6">
                                     <div class="mb-3">
                                         <label for="end_date" class="form-label">Tanggal Pinjam Akhir</label>
                                         <input type="date" class="form-control mt-1" name="end_date" id="end_date"

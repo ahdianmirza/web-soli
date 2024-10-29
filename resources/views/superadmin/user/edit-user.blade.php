@@ -38,12 +38,12 @@
                                         placeholder="Masukkan password" required>
                                 </div>
                                 <div class="form-group mb-3">
-                                    <label for="id_departemen">Departemen</label>
-                                    <select class="form-control mt-1" id="id_departemen" name="id_departemen">
-                                        <option selected disabled>Pilih Departemen</option>
-                                        @foreach ($departemenList as $departemen)
-                                            <option @if ($departemen->id_departemen == $selectedUser->id_departemen) selected @endif
-                                                value="{{ $departemen->id_departemen }}">{{ $departemen->departemen }}
+                                    <label for="id_lab">Lab</label>
+                                    <select class="form-control mt-1" id="id_lab" name="id_lab">
+                                        <option selected disabled>Pilih Lab</option>
+                                        @foreach ($labList as $lab)
+                                            <option @if ($lab->id_lab == $selectedUser->id_lab) selected @endif
+                                                value="{{ $lab->id_lab }}">{{ $lab->lab }}
                                             </option>
                                         @endforeach
                                     </select>
