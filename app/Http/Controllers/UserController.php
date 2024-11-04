@@ -42,7 +42,6 @@ class UserController extends Controller {
         $selectedUser = User::find($id);
         $selectedUser->name = $validatedData['name'];
         $selectedUser->email = $validatedData['email'];
-        $selectedUser->id_departemen = null;
         if ($request->file('photo')) {
             $selectedUser->photo = $fileName;
         }

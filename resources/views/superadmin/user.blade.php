@@ -26,8 +26,9 @@
                                     <tr>
                                         <th style="text-align: center;">No</th>
                                         <th style="text-align: center;">Nama Peminjam</th>
-                                        <th style="text-align: center;">email</th>
+                                        <th style="text-align: center;">Email</th>
                                         <th style="text-align: center;">Role</th>
+                                        <th style="text-align: center;">Lab</th>
                                         <th style="text-align: center;">Status</th>
                                         <th style="text-align: center;">Action</th>
                                     </tr>
@@ -39,6 +40,7 @@
                                             <td style="text-align: center;">{{ $item->name }}</td>
                                             <td style="text-align: center;">{{ $item->email }}</td>
                                             <td style="text-align: center;">{{ $item->id_role }}</td>
+                                            <td style="text-align: center;">{{ $item->lab }}</td>
                                             <td style="text-align: center;">
                                                 @if ($item->id_status == 1)
                                                     <span class="badge bg-success">Aktif</span>

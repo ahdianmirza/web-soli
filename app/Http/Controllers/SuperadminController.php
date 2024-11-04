@@ -380,7 +380,8 @@ class SuperadminController extends Controller {
     public function user() {
         $user = Auth::user();
         $users = DB::table('users')
-            ->select("*")
+            ->select("users.*", "lab.lab")
+            ->leftJoin("lab", "users.id_lab", "lab.id_lab")
             ->orderBy("created_at", "desc")
             ->get();
 
@@ -628,7 +629,6 @@ class SuperadminController extends Controller {
         $selectedUser = User::find($id);
         $selectedUser->name = $validatedData['name'];
         $selectedUser->email = $validatedData['email'];
-        $selectedUser->id_departemen = null;
         if ($request->file('photo')) {
             $selectedUser->photo = $fileName;
         }

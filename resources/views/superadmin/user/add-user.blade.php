@@ -86,7 +86,6 @@
 
         <script>
             const onChangeUser = (e) => {
-                console.info("lab value: ", e.target.value);
                 const idLabInput = document.getElementById("id_lab");
                 let userRole = e.target.value;
                 if (userRole == "User" || userRole == "Superadmin") {

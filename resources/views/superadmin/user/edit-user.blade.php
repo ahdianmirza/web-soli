@@ -38,6 +38,19 @@
                                         placeholder="Masukkan password" required>
                                 </div>
                                 <div class="form-group mb-3">
+                                    <label for="id_role">Role</label>
+                                    <select class="form-control mt-1" id="id_role" name="id_role"
+                                        onchange="onChangeUserEdit(event)">
+                                        <option selected disabled>Pilih Role</option>
+                                        <option @if ($selectedUser->id_role == 'Superadmin') selected @endif value="Superadmin">
+                                            Superadmin</option>
+                                        <option @if ($selectedUser->id_role == 'Admin') selected @endif value="Admin">Admin
+                                        </option>
+                                        <option @if ($selectedUser->id_role == 'User') selected @endif value="User">User
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="form-group mb-3">
                                     <label for="id_lab">Lab</label>
                                     <select @if ($selectedUser->id_role != 'Admin') disabled @endif class="form-control mt-1"
                                         id="id_lab" name="id_lab">
@@ -47,18 +60,6 @@
                                                 value="{{ $lab->id_lab }}">{{ $lab->lab }}
                                             </option>
                                         @endforeach
-                                    </select>
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="id_role">Role</label>
-                                    <select class="form-control mt-1" id="id_role" name="id_role">
-                                        <option selected disabled>Pilih Role</option>
-                                        <option @if ($selectedUser->id_role == 'Superadmin') selected @endif value="Superadmin">
-                                            Superadmin</option>
-                                        <option @if ($selectedUser->id_role == 'Admin') selected @endif value="Admin">Admin
-                                        </option>
-                                        <option @if ($selectedUser->id_role == 'User') selected @endif value="User">User
-                                        </option>
                                     </select>
                                 </div>
                                 <div class="d-flex gap-3 mt-2">
@@ -88,6 +89,18 @@
                 </div>
             </div>
         </section>
+
+        <script>
+            const onChangeUserEdit = (e) => {
+                const idLabInput = document.getElementById("id_lab");
+                let userRole = e.target.value;
+                if (userRole == "User" || userRole == "Superadmin") {
+                    idLabInput.disabled = true;
+                } else {
+                    idLabInput.disabled = false;
+                }
+            }
+        </script>
 
     </main>
 @endsection

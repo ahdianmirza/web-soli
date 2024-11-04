@@ -399,6 +399,7 @@ class PeminjamanController extends Controller {
             ->join("approval_peminjamen as approval", "log.id_approval", "approval.id")
             ->join("users as user_dept", "approval.id_lab", "user_dept.id_lab")
             ->get();
+        // die($peminjamanHistory);
 
         return view('user.header-peminjaman', [
             'user' => $user,
